@@ -15,12 +15,12 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.ByteBuffer;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -104,16 +104,17 @@ public class MainActivity extends AppCompatActivity {
 
     public byte[] getByteData(URL url) {
         InputStream inputStream;
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(MAX_BUFFER_IN_BYTE);
         HttpURLConnection httpURLConnection = null;
-        ByteBuffer byteBuffer = ByteBuffer.allocate(MAX_BUFFER_IN_BYTE);
+
 
         try {
             httpURLConnection = (HttpURLConnection) url.openConnection();
-            inputStream = new BufferedInputStream(httpURLConnection.getInputStream(), MAX_BUFFER_IN_BYTE);
+            inputStream = new BufferedInputStream(httpURLConnection.getInputStream());
 
-            readFromStream(inputStream, byteBuffer.array());
+            readFromStream(inputStream, byteArrayOutputStream);
 
-            inputStream.read(byteBuffer.array());
+
             if (inputStream != null) {
                 inputStream.close();
             }
@@ -125,11 +126,23 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        return byteBuffer.array();
+        return byteArrayOutputStream.toByteArray();
     }
 
-    private void readFromStream(InputStream inputStream, byte[] array) throws IOException {
-        inputStream.read(array);
-        Log.i(TAG, "readFromStream: " + array.length + " bytes");
+    private void readFromStream(InputStream inputStream, ByteArrayOutputStream array) throws IOException {
+        int MAX_BYTE_READ_WRITE = 1024;
+        int nByteRead;
+        byte[] bytes = new byte[MAX_BYTE_READ_WRITE];
+        do {
+            nByteRead = inputStream.read(bytes, 0, MAX_BYTE_READ_WRITE);
+            if (nByteRead == -1)
+                break;
+
+            array.write(bytes, 0, nByteRead);
+        } while (true);
+
+
+        int totalByte = array.size();
+        Log.i(TAG, "readFromStream: " + totalByte + " bytes");
     }
 }
