@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,9 +28,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         imageView = findViewById(R.id.imageView);
         btnLoadImage = findViewById(R.id.button);
-        btnLoadImage.setOnClickListener((View v) -> {
-            fetchImage(IMAGE_SOURCE_WEBP);
-        });
+        btnLoadImage.setOnClickListener((View v) -> fetchImage(IMAGE_SOURCE_WEBP));
     }
 
     @Override
@@ -43,29 +40,23 @@ public class MainActivity extends AppCompatActivity {
     private void fetchImage(String imageSource) {
         final Handler handler = new Handler(
                 getMainLooper() /* explicit main looper */,
-                new Handler.Callback() {
-                    @Override
-                    public boolean handleMessage(@NonNull Message message) {
-                        if (message != null && message.obj instanceof Bitmap) {
-                            Bitmap bm = (Bitmap) message.obj;
-                            imageView.setImageBitmap(bm);
-                        }
-                        return true;
+                message -> {
+                    if (message != null && message.obj instanceof Bitmap) {
+                        Bitmap bm = (Bitmap) message.obj;
+                        imageView.setImageBitmap(bm);
                     }
+                    return true;
                 });
 
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                // download image
+        Thread t = new Thread(() -> {
+            // download image
 
-                // decode image
-                Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.webp_format);
+            // decode image
+            Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.webp_format);
 
-                Message message = Message.obtain();
-                message.obj = bm;
-                handler.sendMessage(message);
-            }
+            Message message = Message.obtain();
+            message.obj = bm;
+            handler.sendMessage(message);
         });
 
         t.start();
