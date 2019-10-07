@@ -1,11 +1,6 @@
 package com.example.bitmapplayround;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,21 +9,15 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
+import com.ninhhk.faster.Faster;
 
 public class MainActivity extends AppCompatActivity {
 
 
     private static final String IMAGE_SOURCE_PNG = "https://dummyimage.com/600x400/000/fff.png&text=PNG+Image";
     private static final String IMAGE_SOURCE_JPG = "https://dummyimage.com/600x400/000/fff.jpg&text=JPG+Image";
-    private static final String IMAGE_SOURCE_WEBP = "";
-    private static final String IMAGE_SOURCE_HEIC = "";
+    private static final String IMAGE_SOURCE_WEBP = "https://www.gstatic.com/webp/gallery/4.webp";
+    private static final String IMAGE_SOURCE_HEIC = "https://nokiatech.github.io/heif/content/images/old_bridge_1440x960.heic";
 
     private static final int MAX_BUFFER_IN_MB = 2;
     private static final int MAX_BUFFER_IN_BYTE = MAX_BUFFER_IN_MB * 1024 * 1024;
@@ -69,80 +58,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void fetchImage(String imageSource) {
-        final Handler handler = new Handler(
-                getMainLooper() /* explicit main looper */,
-                message -> {
-                    if (message != null && message.obj instanceof Bitmap) {
-                        Bitmap bm = (Bitmap) message.obj;
-                        imageView.setImageBitmap(bm);
-                        isLoading = false;
-                    }
-                    return true;
-                });
-
-        Thread t = new Thread(() -> {
-            // download image
-            try {
-                byte[] bytes = getByteData(new URL(imageSource));
-
-                // decode image
-//                Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.webp_format);
-
-                Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                Message message = Message.obtain();
-                message.obj = bm;
-                handler.sendMessage(message);
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-        });
-
-        t.start();
-    }
-
-
-    public byte[] getByteData(URL url) {
-        InputStream inputStream;
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(MAX_BUFFER_IN_BYTE);
-        HttpURLConnection httpURLConnection = null;
-
-
-        try {
-            httpURLConnection = (HttpURLConnection) url.openConnection();
-            inputStream = new BufferedInputStream(httpURLConnection.getInputStream());
-
-            readFromStream(inputStream, byteArrayOutputStream);
-
-
-            if (inputStream != null) {
-                inputStream.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (httpURLConnection != null) {
-                httpURLConnection.disconnect();
-            }
-        }
-
-        return byteArrayOutputStream.toByteArray();
-    }
-
-    private void readFromStream(InputStream inputStream, ByteArrayOutputStream array) throws IOException {
-        int MAX_BYTE_READ_WRITE = 1024;
-        int nByteRead;
-        byte[] bytes = new byte[MAX_BYTE_READ_WRITE];
-        do {
-            nByteRead = inputStream.read(bytes, 0, MAX_BYTE_READ_WRITE);
-            if (nByteRead == -1)
-                break;
-
-            array.write(bytes, 0, nByteRead);
-        } while (true);
-
-
-        int totalByte = array.size();
-        Log.i(TAG, "readFromStream: " + totalByte + " bytes");
+        Faster.getInstance()
+                .load(imageSource)
+                .resize(50, 50)
+                .setListener((bitmap) -> {
+                    isLoading = false;
+                })
+                .into(imageView);
     }
 }
