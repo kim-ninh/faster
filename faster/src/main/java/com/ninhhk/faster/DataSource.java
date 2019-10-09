@@ -1,5 +1,7 @@
 package com.ninhhk.faster;
 
+import java.util.Objects;
+
 public abstract class DataSource<T> {
     protected T model;
 
@@ -14,4 +16,9 @@ public abstract class DataSource<T> {
     }
 
     abstract public void load();
+
+    @Override
+    public int hashCode() {
+        return model.hashCode();
+    }
 }

@@ -3,14 +3,18 @@ package com.ninhhk.faster;
 import android.graphics.Bitmap;
 import android.util.LruCache;
 
-public class LruCacheStrategy implements Cache<String, Bitmap> {
+public class LruCacheStrategy implements Cache<DataSource<?>, Bitmap> {
 
     private static final int MAX_SIZE = 1024;
-    private LruCache<String, Bitmap> lruCache;
+    private LruCache<DataSource<?>, Bitmap> lruCache;
 
-    LruCacheStrategy() {
-        lruCache = new LruCache(MAX_SIZE);
+    public LruCacheStrategy() {
+        lruCache = new LruCache<>(MAX_SIZE);
 
+    }
+
+    public LruCacheStrategy(int size){
+        lruCache = new LruCache<>(size);
     }
 
     public LruCacheStrategy(LruCache lruCache) {
@@ -18,8 +22,9 @@ public class LruCacheStrategy implements Cache<String, Bitmap> {
 
     }
 
+
     @Override
-    public Bitmap get(String key) {
+    public Bitmap get(DataSource<?> key) {
         return lruCache.get(key);
     }
 
@@ -29,7 +34,8 @@ public class LruCacheStrategy implements Cache<String, Bitmap> {
     }
 
     @Override
-    public void put(String key, Bitmap value) {
+    public void put(DataSource<?> key, Bitmap value) {
         lruCache.put(key, value);
     }
+
 }

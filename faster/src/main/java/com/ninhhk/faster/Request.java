@@ -8,43 +8,46 @@ import java.util.List;
 
 public class Request {
 
-    private final ResponseDelegate<Bitmap> bitmapLoad;
+//    private final ResponseDelegate<Bitmap> bitmapLoad;
     private final ResponseDelegate<Bitmap> listener;
     private DataSource<?> dataSource;
-    private List<RequestOption> requestOptions;
-    private ImageDecoder imageDecoder;
+    private RequestOption requestOption;
+    private ImageView targetView;
 
     public Request(RequestBuilder builder) {
         this.dataSource = builder.dataSource;
-        this.bitmapLoad = builder.responseDelegate;
         this.listener = builder.listener;
-        this.requestOptions = builder.requestOptions;
-        this.imageDecoder = builder.imageDecoder;
+        this.requestOption = builder.requestOption;
+        this.targetView = builder.targetView;
     }
 
-    public void start() {
-        dataSource.setByteLoadSuccess((bytes) -> {
-            Bitmap bm = imageDecoder.decode(bytes);
-            bitmapLoad.onReady(bm);
-            if (listener != null) {
-                listener.onReady(bm);
-            }
-        });
-
-        dataSource.load();
+    public ResponseDelegate<Bitmap> getListener() {
+        return listener;
     }
 
-    public void cancel() {
+    public DataSource<?> getDataSource() {
+        return dataSource;
+    }
 
+    public RequestOption getRequestOption() {
+        return requestOption;
+    }
+
+    public ImageView getTargetView() {
+        return targetView;
     }
 
     public static class RequestBuilder {
         public static final String TAG = RequestBuilder.class.getSimpleName();
-        private ImageDecoder imageDecoder = new ImageDecoder();
+        public RequestOption requestOption = new RequestOption();
+        public ImageView targetView;
         private DataSource<?> dataSource;
-        private ResponseDelegate responseDelegate;
         private ResponseDelegate listener;
-        private List<RequestOption> requestOptions = new ArrayList<>();
+        private ImageLoader imageLoader;
+
+        public RequestBuilder(ImageLoader imageLoader) {
+            this.imageLoader = imageLoader;
+        }
 
         public RequestBuilder load(String url) {
             this.dataSource = new UrlStringSource(url);
@@ -52,27 +55,43 @@ public class Request {
         }
 
         public void into(final ImageView imageView) {
-            responseDelegate = new ResponseDelegate<Bitmap>() {
-                @Override
-                public void onReady(Bitmap data) {
-                    imageView.setImageBitmap(data);
-                }
-            };
+//            responseDelegate = new ResponseDelegate<Bitmap>() {
+//                @Override
+//                public void onReady(Bitmap data) {
+//                 imageView.setImageBitmap(data);
+//                }
+//            };
+            targetView = imageView;
+            if (dimesionUnset()) {
+                setDefaultDimension();
+            }
 
             Request request = build();
-            request.start();
+            imageLoader.handleRequest(request);
         }
 
-        private Request build() {
+        private void setDefaultDimension() {
+            requestOption.setFinalWidth(targetView.getWidth());
+            requestOption.setFinalHeight(targetView.getHeight());
+        }
+
+        private boolean dimesionUnset() {
+            return requestOption.getFinalHeight() == RequestOption.UNSET ||
+            requestOption.getFinalWidth() == RequestOption.UNSET;
+        }
+
+        private Request build(){
             return new Request(this);
         }
 
         public RequestBuilder resize(int targetWidth, int targetHeight) {
+            requestOption.setFinalHeight(targetHeight);
+            requestOption.setFinalWidth(targetWidth);
             return this;
         }
 
         public RequestBuilder onReady(ResponseDelegate responseDelegate) {
-            this.responseDelegate = responseDelegate;
+//            this.responseDelegate = responseDelegate;
             return this;
         }
 

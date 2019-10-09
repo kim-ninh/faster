@@ -2,12 +2,16 @@ package com.ninhhk.faster;
 
 public class Faster {
     private static Faster mInstance = null;
+    private final ImageLoader imageLoader;
     private Request.RequestBuilder mRequestBuilder;
     private Cache memCache;
-    private ImageDecoder imageDecodeHelper;
+    private ImageDecoder imageDecoder;
 
     private Faster() {
-        mRequestBuilder = new Request.RequestBuilder();
+        memCache = new LruCacheStrategy();
+        imageDecoder = null;
+        imageLoader = new ImageLoader(memCache, imageDecoder);
+        mRequestBuilder = new Request.RequestBuilder(imageLoader);
     }
 
     public static Faster getInstance() {
@@ -26,7 +30,7 @@ public class Faster {
     }
 
     public void changeDecodeHelper(ImageDecoder imageDecodeHelper) {
-        this.imageDecodeHelper = imageDecodeHelper;
+        this.imageDecoder = imageDecodeHelper;
     }
 
     public void changeCacheStrategy(Cache memCache) {

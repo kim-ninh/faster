@@ -3,11 +3,6 @@ package com.ninhhk.faster;
 import android.graphics.Bitmap;
 
 abstract class Transformation {
-    protected Bitmap bm;
 
-    public Transformation(Bitmap bm) {
-        this.bm = bm;
-    }
-
-    abstract void transform();
+    abstract Bitmap transform(Bitmap source, int targetWidth, int targetHeight);
 }

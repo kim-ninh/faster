@@ -13,7 +13,7 @@ import java.net.URL;
 public class UrlStringSource extends DataSource<String> {
 
     private static final String TAG = UrlStringSource.class.getSimpleName();
-    private static final int MAX_BUFFER_IN_MB = 2;
+    private static final int MAX_BUFFER_IN_MB = 4;
     private static final int MAX_BUFFER_IN_BYTE = MAX_BUFFER_IN_MB * 1024 * 1024;
 
     private Handler handler = new Handler(Looper.getMainLooper());
@@ -59,6 +59,4 @@ public class UrlStringSource extends DataSource<String> {
             byteLoad.onReady(array.toByteArray());
         });
     }
-
-
 }
