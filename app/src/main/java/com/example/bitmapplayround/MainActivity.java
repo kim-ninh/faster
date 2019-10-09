@@ -1,5 +1,6 @@
 package com.example.bitmapplayround;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -9,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.ninhhk.faster.Faster;
 
 public class MainActivity extends AppCompatActivity {
@@ -18,6 +20,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String IMAGE_SOURCE_JPG = "https://dummyimage.com/600x400/000/fff.jpg&text=JPG+Image";
     private static final String IMAGE_SOURCE_WEBP = "https://www.gstatic.com/webp/gallery/4.webp";
     private static final String IMAGE_SOURCE_HEIC = "https://nokiatech.github.io/heif/content/images/old_bridge_1440x960.heic";
+    public static final String HEAVY_IMAGE_PNG = "https://www.pexels.com/photo/417074/download/?search_query=high%2520resolution&tracking_id=k4uuwlyp5jo";
+    public static final String HEAVY_IMAGE_2 = "https://www.pexels.com/photo/461862/download/?search_query=high%2520resolution&tracking_id=k4uuwlyp5jo";
 
     private static final int MAX_BUFFER_IN_MB = 2;
     private static final int MAX_BUFFER_IN_BYTE = MAX_BUFFER_IN_MB * 1024 * 1024;
@@ -58,12 +62,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void fetchImage(String imageSource) {
-        Faster.getInstance()
+//        Faster.getInstance()
+//                .load(imageSource)
+//                .resize(50, 50)
+//                .setListener((bitmap) -> {
+//                    isLoading = false;
+//                })
+//                .into(imageView);
+//
+
+        Glide.with(this)
                 .load(imageSource)
-                .resize(50, 50)
-                .setListener((bitmap) -> {
-                    isLoading = false;
-                })
                 .into(imageView);
     }
 }
