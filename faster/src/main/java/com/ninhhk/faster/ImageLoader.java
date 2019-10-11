@@ -5,8 +5,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.ImageView;
 
-import androidx.annotation.Dimension;
-
 public class ImageLoader {
 
     private static Handler mainThreadHandler = new Handler(Looper.getMainLooper());
@@ -32,7 +30,6 @@ public class ImageLoader {
                 listener.onReady(cachedBitmap);
         }
         else{
-            imageDecoder = new MatchTargetDimensionImageDecoder(request.getRequestOption());
             loadDataSource(request);
         }
 
@@ -42,7 +39,7 @@ public class ImageLoader {
     private void loadDataSource(Request request) {
         DataSource<?> dataSource = request.getDataSource();
         dataSource.setByteLoadSuccess((bytes)->{
-            Bitmap bm = imageDecoder.decode(bytes);
+            Bitmap bm = imageDecoder.decode(bytes, request.getRequestOption());
             memCache.put(dataSource, bm);
             mainThreadHandler.post(()->{handleRequest(request);});
         });

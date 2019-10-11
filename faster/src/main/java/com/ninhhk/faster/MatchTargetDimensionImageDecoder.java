@@ -8,6 +8,9 @@ public class MatchTargetDimensionImageDecoder extends ImageDecoder {
         super(requestOption);
     }
 
+    public MatchTargetDimensionImageDecoder() {
+    }
+
     @Override
     protected void config(byte[] bytes) {
         opts.inJustDecodeBounds = true;

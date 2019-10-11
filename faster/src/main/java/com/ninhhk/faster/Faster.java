@@ -9,7 +9,7 @@ public class Faster {
 
     private Faster() {
         memCache = new LruCacheStrategy();
-        imageDecoder = null;
+        imageDecoder = new MatchTargetDimensionImageDecoder();
         imageLoader = new ImageLoader(memCache, imageDecoder);
         mRequestBuilder = new Request.RequestBuilder(imageLoader);
     }

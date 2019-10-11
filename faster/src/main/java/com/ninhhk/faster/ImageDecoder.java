@@ -11,15 +11,19 @@ public abstract class ImageDecoder {
         this.requestOption = requestOption;
     }
 
+    public ImageDecoder(){
+
+    }
+
     abstract protected void config(byte[] bytes);
 
-    public Bitmap decode(byte[] bytes) {
+    public Bitmap decode(byte[] bytes, RequestOption requestOption) {
         Bitmap result;
+        this.requestOption = requestOption;
 
         config(bytes);
         opts.inJustDecodeBounds = false;
         result = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, opts);
-
         result = applyTransformation(result);
         return result;
     }
