@@ -62,17 +62,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void fetchImage(String imageSource) {
-//        Faster.getInstance()
-//                .load(imageSource)
+        Faster.getInstance()
+                .load(imageSource)
 //                .resize(50, 50)
-//                .setListener((bitmap) -> {
-//                    isLoading = false;
-//                })
-//                .into(imageView);
-//
+                .setListener((bitmap) -> {
+                    isLoading = false;
+                })
+                .into(imageView);
 
+
+/*
         Glide.with(this)
                 .load(imageSource)
                 .into(imageView);
+*/
     }
 }

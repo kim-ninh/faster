@@ -1,17 +1,15 @@
 package com.ninhhk.faster;
 
-import java.util.Objects;
-
 public abstract class DataSource<T> {
     protected T model;
 
-    protected ResponseDelegate<byte[]> byteLoad;
+    protected Callback<byte[]> byteLoad;
 
     public DataSource(T model) {
         this.model = model;
     }
 
-    public void setByteLoadSuccess(ResponseDelegate<byte[]> byteLoad) {
+    public void setByteLoadSuccess(Callback<byte[]> byteLoad) {
         this.byteLoad = byteLoad;
     }
 

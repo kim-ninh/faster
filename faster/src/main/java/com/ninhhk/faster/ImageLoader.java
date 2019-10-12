@@ -5,44 +5,37 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.ImageView;
 
-public class ImageLoader {
+import androidx.annotation.MainThread;
 
-    private static Handler mainThreadHandler = new Handler(Looper.getMainLooper());
-    private ImageDecoder imageDecoder;
-    private Cache<DataSource<?>, Bitmap> memCache;
+public class ImageLoader implements Callback<Bitmap> {
 
-    public ImageLoader(Cache memCache, ImageDecoder imageDecoder) {
-        this.memCache = memCache;
-        this.imageDecoder = imageDecoder;
+    private BitmapRepo bitmapRepo = new BitmapRepo();
+    private ImageView targetView;
+    private Callback<Bitmap> requestListener;
+    private RequestManager requestManager = RequestManager.getInstance();
+
+    public ImageLoader(){
+        bitmapRepo.setCallback(this);
     }
 
     public void handleRequest(Request request){
-        ImageView targetView = request.getTargetView();
-        DataSource<?> dataSource = request.getDataSource();
-        Bitmap cachedBitmap = memCache.get(dataSource);
-        ResponseDelegate<Bitmap> listener = request.getListener();
+        targetView = request.getTargetView();
+        requestListener = request.getListener();
 
-
-        if (cachedBitmap != null) {
-            targetView.setImageBitmap(cachedBitmap);
-
-            if (listener != null)
-                listener.onReady(cachedBitmap);
-        }
-        else{
-            loadDataSource(request);
-        }
-
-
+        Key bitmapKey = new BitmapKeyFactory(request).build();
+        requestManager.addRequest(bitmapKey, request);
+        bitmapRepo.load(bitmapKey);
     }
 
-    private void loadDataSource(Request request) {
-        DataSource<?> dataSource = request.getDataSource();
-        dataSource.setByteLoadSuccess((bytes)->{
-            Bitmap bm = imageDecoder.decode(bytes, request.getRequestOption());
-            memCache.put(dataSource, bm);
-            mainThreadHandler.post(()->{handleRequest(request);});
-        });
-        dataSource.load();
+    @MainThread
+    @Override
+    public void onReady(Bitmap bitmap) {
+        if (targetView != null){
+            targetView.setImageBitmap(bitmap);
+        }
+
+        if (requestListener != null){
+            requestListener.onReady(bitmap);
+        }
     }
 }

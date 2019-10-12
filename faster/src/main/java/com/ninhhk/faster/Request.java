@@ -3,13 +3,10 @@ package com.ninhhk.faster;
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Request {
 
-//    private final ResponseDelegate<Bitmap> bitmapLoad;
-    private final ResponseDelegate<Bitmap> listener;
+//    private final Callback<Bitmap> bitmapLoad;
+    private final Callback<Bitmap> listener;
     private DataSource<?> dataSource;
     private RequestOption requestOption;
     private ImageView targetView;
@@ -21,7 +18,7 @@ public class Request {
         this.targetView = builder.targetView;
     }
 
-    public ResponseDelegate<Bitmap> getListener() {
+    public Callback<Bitmap> getListener() {
         return listener;
     }
 
@@ -42,7 +39,7 @@ public class Request {
         public RequestOption requestOption = new RequestOption();
         public ImageView targetView;
         private DataSource<?> dataSource;
-        private ResponseDelegate listener;
+        private Callback listener;
         private ImageLoader imageLoader;
 
         public RequestBuilder(ImageLoader imageLoader) {
@@ -55,7 +52,7 @@ public class Request {
         }
 
         public void into(final ImageView imageView) {
-//            responseDelegate = new ResponseDelegate<Bitmap>() {
+//            responseDelegate = new Callback<Bitmap>() {
 //                @Override
 //                public void onReady(Bitmap data) {
 //                 imageView.setImageBitmap(data);
@@ -90,12 +87,12 @@ public class Request {
             return this;
         }
 
-        public RequestBuilder onReady(ResponseDelegate responseDelegate) {
-//            this.responseDelegate = responseDelegate;
+        public RequestBuilder onReady(Callback callback) {
+//            this.callback = callback;
             return this;
         }
 
-        public RequestBuilder setListener(ResponseDelegate<Bitmap> listener) {
+        public RequestBuilder setListener(Callback<Bitmap> listener) {
             this.listener = listener;
             return this;
         }
