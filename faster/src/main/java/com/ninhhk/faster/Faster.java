@@ -1,5 +1,8 @@
 package com.ninhhk.faster;
 
+import com.ninhhk.faster.decoder.ImageDecoder;
+import com.ninhhk.faster.decoder.MatchTargetDimensionImageDecoder;
+
 public class Faster {
     private static Faster mInstance = null;
     private final ImageLoader imageLoader;

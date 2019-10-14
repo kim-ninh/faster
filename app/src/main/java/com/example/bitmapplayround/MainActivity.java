@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.disklrucache.DiskLruCache;
 import com.ninhhk.faster.Faster;
 
 public class MainActivity extends AppCompatActivity {
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
         btnTestResponsive.setOnClickListener((View v) -> {
             Toast.makeText(MainActivity.this, "This button is responsive", Toast.LENGTH_SHORT).show();
         });
+        DiskLruCache diskLruCache;
     }
 
     @Override

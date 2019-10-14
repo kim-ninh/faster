@@ -1,22 +1,27 @@
-package com.ninhhk.faster;
+package com.ninhhk.faster.data.store;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.LruCache;
 
-import androidx.annotation.Nullable;
+import com.ninhhk.faster.Callback;
+import com.ninhhk.faster.decoder.ImageDecoder;
+import com.ninhhk.faster.Key;
+import com.ninhhk.faster.decoder.MatchTargetDimensionImageDecoder;
+import com.ninhhk.faster.Request;
+import com.ninhhk.faster.RequestManager;
+import com.ninhhk.faster.RequestOption;
 
 import java.util.Objects;
 
-public class MemImp extends MemoryRepo {
+public class MemStoreImp extends MemoryStore {
 
     private static final int MAX_SIZE = 1024;
     private LruCache<Key, Bitmap> memCache;
     private ImageDecoder imageDecoder;
     private RequestManager requestManager;
 
-    public MemImp(DiskRepo diskRepo) {
-        super(diskRepo);
+    public MemStoreImp(DiskStore diskStore) {
+        super(diskStore);
         memCache = new LruCache<>(MAX_SIZE);
         imageDecoder = new MatchTargetDimensionImageDecoder();
         requestManager = RequestManager.getInstance();
@@ -41,11 +46,11 @@ public class MemImp extends MemoryRepo {
         Callback<byte[]> callback = bytes -> {
             Bitmap bitmap = decodeFromBytes(bytes, key);
             saveToMemCache(key, bitmap);
-            MemImp.this.callback.onReady(bitmap);
+            MemStoreImp.this.callback.onReady(bitmap);
         };
 
-        diskRepo.setCallback(callback);
-        diskRepo.load(key);
+        diskStore.setCallback(callback);
+        diskStore.load(key);
         return new byte[0];
     }
 

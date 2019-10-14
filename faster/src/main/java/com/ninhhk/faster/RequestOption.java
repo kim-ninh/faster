@@ -1,5 +1,8 @@
 package com.ninhhk.faster;
 
+import com.ninhhk.faster.transformer.DefaultTransformation;
+import com.ninhhk.faster.transformer.Transformation;
+
 public class RequestOption {
 
     public static final int UNSET = -1;

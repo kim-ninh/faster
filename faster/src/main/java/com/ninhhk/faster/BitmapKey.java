@@ -3,6 +3,8 @@ package com.ninhhk.faster;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.ninhhk.faster.data.source.DataSource;
+
 public class BitmapKey implements Key {
     private static final int PRIME_NUM = 13;
     private RequestOption requestOption;

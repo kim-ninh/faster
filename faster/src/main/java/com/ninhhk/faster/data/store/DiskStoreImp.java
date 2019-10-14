@@ -1,11 +1,15 @@
-package com.ninhhk.faster;
+package com.ninhhk.faster.data.store;
 
-import android.graphics.BitmapFactory;
+import com.ninhhk.faster.Callback;
+import com.ninhhk.faster.data.source.DataSource;
+import com.ninhhk.faster.Key;
+import com.ninhhk.faster.Request;
+import com.ninhhk.faster.RequestManager;
 
 import java.io.File;
 import java.util.Objects;
 
-public class DiskImp extends DiskRepo{
+public class DiskStoreImp extends DiskStore {
     private final String DIR = "/faster";
     private RequestManager requestManager = RequestManager.getInstance();
 
@@ -32,7 +36,7 @@ public class DiskImp extends DiskRepo{
         DataSource<?> dataSource = request.getDataSource();
         Callback<byte[]> callback = bytes -> {
             saveToDisk(key, bytes);
-            DiskImp.this.callback.onReady(bytes);
+            DiskStoreImp.this.callback.onReady(bytes);
         };
 
         dataSource.setByteLoadSuccess(callback);

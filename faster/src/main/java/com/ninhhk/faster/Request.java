@@ -3,6 +3,9 @@ package com.ninhhk.faster;
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 
+import com.ninhhk.faster.data.source.DataSource;
+import com.ninhhk.faster.data.source.UrlStringSource;
+
 public class Request {
 
 //    private final Callback<Bitmap> bitmapLoad;

@@ -1,6 +1,9 @@
-package com.ninhhk.faster;
+package com.ninhhk.faster.data.store;
 
-public abstract class DiskRepo {
+import com.ninhhk.faster.Callback;
+import com.ninhhk.faster.Key;
+
+public abstract class DiskStore {
     protected Callback<byte[]> callback;
 
     public void setCallback(Callback<byte[]> callback) {

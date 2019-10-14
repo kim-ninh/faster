@@ -1,4 +1,6 @@
-package com.ninhhk.faster;
+package com.ninhhk.faster.data.source;
+
+import com.ninhhk.faster.Callback;
 
 public abstract class DataSource<T> {
     protected T model;

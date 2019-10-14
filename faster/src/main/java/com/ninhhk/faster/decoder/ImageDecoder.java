@@ -1,7 +1,10 @@
-package com.ninhhk.faster;
+package com.ninhhk.faster.decoder;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+
+import com.ninhhk.faster.RequestOption;
+import com.ninhhk.faster.transformer.Transformation;
 
 public abstract class ImageDecoder {
     protected BitmapFactory.Options opts = new BitmapFactory.Options();

@@ -1,4 +1,4 @@
-package com.ninhhk.faster;
+package com.ninhhk.faster.data.source;
 
 import android.os.Handler;
 import android.os.Looper;

@@ -1,4 +1,6 @@
-package com.ninhhk.faster;
+package com.ninhhk.faster.decoder;
+
+import com.ninhhk.faster.RequestOption;
 
 public class DefaultImageDecoder extends ImageDecoder {
     public DefaultImageDecoder(RequestOption requestOption) {

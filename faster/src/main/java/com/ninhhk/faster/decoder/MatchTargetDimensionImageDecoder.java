@@ -1,6 +1,8 @@
-package com.ninhhk.faster;
+package com.ninhhk.faster.decoder;
 
 import android.graphics.BitmapFactory;
+
+import com.ninhhk.faster.RequestOption;
 
 public class MatchTargetDimensionImageDecoder extends ImageDecoder {
 

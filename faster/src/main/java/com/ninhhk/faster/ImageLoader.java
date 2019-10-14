@@ -1,21 +1,21 @@
 package com.ninhhk.faster;
 
 import android.graphics.Bitmap;
-import android.os.Handler;
-import android.os.Looper;
 import android.widget.ImageView;
 
 import androidx.annotation.MainThread;
 
+import com.ninhhk.faster.data.store.BitmapStore;
+
 public class ImageLoader implements Callback<Bitmap> {
 
-    private BitmapRepo bitmapRepo = new BitmapRepo();
+    private BitmapStore bitmapStore = new BitmapStore();
     private ImageView targetView;
     private Callback<Bitmap> requestListener;
     private RequestManager requestManager = RequestManager.getInstance();
 
     public ImageLoader(){
-        bitmapRepo.setCallback(this);
+        bitmapStore.setCallback(this);
     }
 
     public void handleRequest(Request request){
@@ -24,7 +24,7 @@ public class ImageLoader implements Callback<Bitmap> {
 
         Key bitmapKey = new BitmapKeyFactory(request).build();
         requestManager.addRequest(bitmapKey, request);
-        bitmapRepo.load(bitmapKey);
+        bitmapStore.load(bitmapKey);
     }
 
     @MainThread

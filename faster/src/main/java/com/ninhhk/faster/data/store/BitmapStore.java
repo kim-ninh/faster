@@ -1,21 +1,23 @@
-package com.ninhhk.faster;
+package com.ninhhk.faster.data.store;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.ninhhk.faster.Callback;
+import com.ninhhk.faster.Key;
+
 import java.util.Objects;
 
-public class BitmapRepo implements Callback<Bitmap>{
+public class BitmapStore implements Callback<Bitmap> {
     private static Handler mainThreadHandler = new Handler(Looper.getMainLooper());
-    private MemoryRepo memoryRepo;
-    private DiskRepo diskRepo;
+    private MemoryStore memoryRepo;
+    private DiskStore diskStore;
     private Callback<Bitmap> callback;
 
-    public BitmapRepo() {
-        this.diskRepo = new DiskImp();
-        this.memoryRepo = new MemImp(diskRepo);
+    public BitmapStore() {
+        this.diskStore = new DiskStoreImp();
+        this.memoryRepo = new MemStoreImp(diskStore);
         memoryRepo.setCallback(this);
     }
 

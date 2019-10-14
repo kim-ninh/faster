@@ -1,16 +1,17 @@
-package com.ninhhk.faster;
+package com.ninhhk.faster.data.store;
 
 import android.graphics.Bitmap;
 
-import java.util.Objects;
+import com.ninhhk.faster.Callback;
+import com.ninhhk.faster.Key;
 
-public abstract class MemoryRepo {
+public abstract class MemoryStore {
 
-    protected DiskRepo diskRepo;
+    protected DiskStore diskStore;
     protected Callback<Bitmap> callback;
 
-    public MemoryRepo(DiskRepo diskRepo) {
-        this.diskRepo = diskRepo;
+    public MemoryStore(DiskStore diskStore) {
+        this.diskStore = diskStore;
     }
 
     public void setCallback(Callback<Bitmap> callback) {
