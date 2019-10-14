@@ -42,6 +42,8 @@ public class DiskStoreImp extends DiskStore {
     private File initSubDir() {
         final String cachePath = context.getCacheDir().getPath();
         File file = new File(cachePath + File.separator + DIR);
+        if (!file.exists())
+            file.mkdir();
         return file;
     }
 
