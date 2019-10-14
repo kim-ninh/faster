@@ -1,6 +1,7 @@
 package com.ninhhk.faster.data.store;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.util.LruCache;
 
 import com.ninhhk.faster.Callback;
@@ -14,6 +15,8 @@ import com.ninhhk.faster.RequestOption;
 import java.util.Objects;
 
 public class MemStoreImp extends MemoryStore {
+
+    public static final String TAG = MemStoreImp.class.getSimpleName();
 
     private static final int MAX_SIZE = 1024;
     private LruCache<Key, Bitmap> memCache;
@@ -56,6 +59,7 @@ public class MemStoreImp extends MemoryStore {
 
     private void saveToMemCache(Key key, Bitmap bitmap) {
         this.memCache.put(key, bitmap);
+        Log.i(TAG, "Bitmap with key " + key.toString() + " has been cached!" );
     }
 
     private Bitmap decodeFromBytes(byte[] bytes, Key key) {

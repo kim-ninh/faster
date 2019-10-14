@@ -2,6 +2,7 @@ package com.ninhhk.faster.data.store;
 
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import com.ninhhk.faster.BitmapKey;
 import com.ninhhk.faster.BitmapKeyFactory;
@@ -26,6 +27,7 @@ import static com.ninhhk.faster.RequestOption.UNSET;
 public class DiskStoreImp extends DiskStore {
     private static final int MAX_BUFFER_IN_MB = 4;
     private static final int MAX_BUFFER_IN_BYTE = MAX_BUFFER_IN_MB * 1024 * 1024;
+    public static final String TAG = DiskStoreImp.class.getSimpleName();
 
     private Context context;
     private final String DIR = "faster";
@@ -83,9 +85,14 @@ public class DiskStoreImp extends DiskStore {
     private void saveToDisk(Key key, byte[] bytes) {
         File file = getCacheFile(key);
         FileOutputStream fileOutputStream;
+
         try {
+            file.createNewFile();
             fileOutputStream = new FileOutputStream(file);
             writeToStream(fileOutputStream, bytes);
+            fileOutputStream.close();
+
+            Log.i(TAG, "File " + file.getAbsolutePath() + " saved!");
         }
         catch (IOException e){
             e.printStackTrace();
@@ -112,6 +119,9 @@ public class DiskStoreImp extends DiskStore {
         try {
             fileInputStream = new FileInputStream(file);
             bytes = readFromStream(fileInputStream);
+            fileInputStream.close();
+
+            Log.i(TAG, "File " + file.getAbsolutePath() + " read!");
         } catch (IOException e) {
             e.printStackTrace();
         }

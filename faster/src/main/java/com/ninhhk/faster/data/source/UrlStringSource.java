@@ -33,6 +33,8 @@ public class UrlStringSource extends DataSource<String> {
                 connection = (HttpURLConnection) url.openConnection();
                 is = new BufferedInputStream(connection.getInputStream());
                 readFromStream(is);
+                is.close();
+
             } catch (IOException e) {
                 e.printStackTrace();
             }

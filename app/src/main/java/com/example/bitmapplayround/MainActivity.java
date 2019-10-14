@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
         btnTestResponsive.setOnClickListener((View v) -> {
             Toast.makeText(MainActivity.this, "This button is responsive", Toast.LENGTH_SHORT).show();
         });
-        DiskLruCache diskLruCache;
     }
 
     @Override

@@ -21,9 +21,10 @@ public class ImageLoader implements Callback<Bitmap> {
     }
 
     public ImageLoader(Context context) {
-        this();
+//        this();
         this.context = context;
         bitmapStore = new BitmapStore(context);
+        bitmapStore.setCallback(this);
     }
 
     public void handleRequest(Request request){
@@ -38,6 +39,7 @@ public class ImageLoader implements Callback<Bitmap> {
     @MainThread
     @Override
     public void onReady(Bitmap bitmap) {
+        requestManager.clearAllRequests();
         if (targetView != null){
             targetView.setImageBitmap(bitmap);
         }
