@@ -23,6 +23,8 @@ public class BitmapKey implements Key {
     public BitmapKey(DataSource<?> dataSource, RequestOption requestOption){
         this.dataSource = dataSource;
         this.requestOption = requestOption;
+        this.width = requestOption.getFinalWidth();
+        this.height = requestOption.getFinalHeight();
     }
 
 

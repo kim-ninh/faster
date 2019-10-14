@@ -1,5 +1,6 @@
 package com.ninhhk.faster.data.store;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
@@ -15,8 +16,8 @@ public class BitmapStore implements Callback<Bitmap> {
     private DiskStore diskStore;
     private Callback<Bitmap> callback;
 
-    public BitmapStore() {
-        this.diskStore = new DiskStoreImp();
+    public BitmapStore(Context context) {
+        this.diskStore = new DiskStoreImp(context);
         this.memoryRepo = new MemStoreImp(diskStore);
         memoryRepo.setCallback(this);
     }

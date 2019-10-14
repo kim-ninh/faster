@@ -40,6 +40,18 @@ public class UrlStringSource extends DataSource<String> {
         t.start();
     }
 
+    @Override
+    public String name() {
+        String url = model;
+        String remoteFileName;
+        int lastIndexOfSlash;
+
+        lastIndexOfSlash = url.lastIndexOf('/');
+        remoteFileName = url.substring(lastIndexOfSlash + 1);
+
+        return remoteFileName;
+    }
+
     private void readFromStream(InputStream is) throws IOException {
         int MAX_BYTE_READ_WRITE = 1024;
         int nByteRead;
@@ -54,9 +66,9 @@ public class UrlStringSource extends DataSource<String> {
             array.write(bytes, 0, nByteRead);
         } while (true);
 
-
-        handler.post(() -> {
-            byteLoad.onReady(array.toByteArray());
-        });
+        byteLoad.onReady(array.toByteArray());
+//        handler.post(() -> {
+//            byteLoad.onReady(array.toByteArray());
+//        });
     }
 }

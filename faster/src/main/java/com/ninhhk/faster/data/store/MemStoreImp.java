@@ -43,8 +43,8 @@ public class MemStoreImp extends MemoryStore {
     @Override
     public byte[] loadFromDisk(Key key) {
 
-        Callback<byte[]> callback = bytes -> {
-            Bitmap bitmap = decodeFromBytes(bytes, key);
+        Callback<byte[]> callback = originBytes -> {
+            Bitmap bitmap = decodeFromBytes(originBytes, key);
             saveToMemCache(key, bitmap);
             MemStoreImp.this.callback.onReady(bitmap);
         };

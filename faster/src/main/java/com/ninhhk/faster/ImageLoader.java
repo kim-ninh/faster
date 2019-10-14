@@ -1,5 +1,6 @@
 package com.ninhhk.faster;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 
@@ -9,13 +10,20 @@ import com.ninhhk.faster.data.store.BitmapStore;
 
 public class ImageLoader implements Callback<Bitmap> {
 
-    private BitmapStore bitmapStore = new BitmapStore();
+    private Context context;
+    private BitmapStore bitmapStore;
     private ImageView targetView;
     private Callback<Bitmap> requestListener;
     private RequestManager requestManager = RequestManager.getInstance();
 
     public ImageLoader(){
         bitmapStore.setCallback(this);
+    }
+
+    public ImageLoader(Context context) {
+        this();
+        this.context = context;
+        bitmapStore = new BitmapStore(context);
     }
 
     public void handleRequest(Request request){

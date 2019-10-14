@@ -1,5 +1,7 @@
 package com.ninhhk.faster;
 
+import android.content.Context;
+
 import com.ninhhk.faster.decoder.ImageDecoder;
 import com.ninhhk.faster.decoder.MatchTargetDimensionImageDecoder;
 
@@ -9,19 +11,21 @@ public class Faster {
     private Request.RequestBuilder mRequestBuilder;
     private Cache memCache;
     private ImageDecoder imageDecoder;
+    private Context context;
 
-    private Faster() {
+    private Faster(Context context) {
         memCache = new LruCacheStrategy();
         imageDecoder = new MatchTargetDimensionImageDecoder();
-        imageLoader = new ImageLoader();
+        imageLoader = new ImageLoader(context);
         mRequestBuilder = new Request.RequestBuilder(imageLoader);
+        this.context = context;
     }
 
-    public static Faster getInstance() {
+    public static Faster getInstance(Context context) {
         if (mInstance == null) {
             synchronized (Faster.class) {
                 if (mInstance == null) {
-                    mInstance = new Faster();
+                    mInstance = new Faster(context);
                 }
             }
         }

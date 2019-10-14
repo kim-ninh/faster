@@ -1,17 +1,47 @@
 package com.ninhhk.faster.data.store;
 
+import android.content.Context;
+import android.graphics.BitmapFactory;
+
+import com.ninhhk.faster.BitmapKey;
+import com.ninhhk.faster.BitmapKeyFactory;
 import com.ninhhk.faster.Callback;
+import com.ninhhk.faster.KeyFactory;
 import com.ninhhk.faster.data.source.DataSource;
 import com.ninhhk.faster.Key;
 import com.ninhhk.faster.Request;
 import com.ninhhk.faster.RequestManager;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Objects;
 
+import static com.ninhhk.faster.RequestOption.UNSET;
+
 public class DiskStoreImp extends DiskStore {
-    private final String DIR = "/faster";
+    private static final int MAX_BUFFER_IN_MB = 4;
+    private static final int MAX_BUFFER_IN_BYTE = MAX_BUFFER_IN_MB * 1024 * 1024;
+
+    private Context context;
+    private final String DIR = "faster";
     private RequestManager requestManager = RequestManager.getInstance();
+    private File cacheDir;
+
+    public DiskStoreImp(Context context) {
+        this.context = context;
+        cacheDir = initSubDir();
+    }
+
+    private File initSubDir() {
+        final String cachePath = context.getCacheDir().getPath();
+        File file = new File(cachePath + File.separator + DIR);
+        return file;
+    }
 
     @Override
     public byte[] load(Key key) {
@@ -46,17 +76,63 @@ public class DiskStoreImp extends DiskStore {
 
     @Override
     protected boolean existInRepo(Key key) {
-        File file = new File(key.toString());
+        File file = getCacheFile(key);
         return file.exists();
     }
 
     private void saveToDisk(Key key, byte[] bytes) {
+        File file = getCacheFile(key);
+        FileOutputStream fileOutputStream;
+        try {
+            fileOutputStream = new FileOutputStream(file);
+            writeToStream(fileOutputStream, bytes);
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+    }
 
+    private File getCacheFile(Key key) {
+        Request request = requestManager.getRequest(key);
+        DataSource<?> dataSource = request.getDataSource();
+        String fileName = dataSource.name();
+
+        return new File(cacheDir, fileName);
+    }
+
+    private void writeToStream(OutputStream outputStream, byte[] bytes) throws IOException {
+        outputStream.write(bytes);
     }
 
     private byte[] openFileWithKey(Key key) {
+        byte[] bytes = new byte[0];
+        File file = getCacheFile(key);
+        FileInputStream fileInputStream;
 
+        try {
+            fileInputStream = new FileInputStream(file);
+            bytes = readFromStream(fileInputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        return new byte[0];
+        return bytes;
+    }
+
+    private byte[] readFromStream(InputStream inputStream) throws IOException {
+        int MAX_BYTE_READ_WRITE = 1024;
+        int nByteRead;
+        ByteArrayOutputStream array = new ByteArrayOutputStream(MAX_BUFFER_IN_BYTE);
+
+        byte[] bytes = new byte[MAX_BYTE_READ_WRITE];
+        do {
+            nByteRead = inputStream.read(bytes, 0, MAX_BYTE_READ_WRITE);
+            if (nByteRead == -1)
+                break;
+
+            array.write(bytes, 0, nByteRead);
+        } while (true);
+
+        return array.toByteArray();
     }
 }

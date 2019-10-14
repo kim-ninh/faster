@@ -17,6 +17,8 @@ public abstract class DataSource<T> {
 
     abstract public void load();
 
+    abstract public String name();
+
     @Override
     public int hashCode() {
         return model.hashCode();

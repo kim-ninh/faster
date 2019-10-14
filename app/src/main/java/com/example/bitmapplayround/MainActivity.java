@@ -64,14 +64,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void fetchImage(String imageSource) {
-        Faster.getInstance()
+        Faster.getInstance(MainActivity.this)
                 .load(imageSource)
 //                .resize(50, 50)
                 .setListener((bitmap) -> {
                     isLoading = false;
                 })
                 .into(imageView);
-
 
 /*
         Glide.with(this)
