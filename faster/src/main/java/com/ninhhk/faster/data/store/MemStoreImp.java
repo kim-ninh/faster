@@ -18,7 +18,7 @@ public class MemStoreImp extends MemoryStore {
 
     public static final String TAG = MemStoreImp.class.getSimpleName();
 
-    private static final int MAX_SIZE = 1024;
+    private static final int MAX_SIZE = 1024 * 1024 * 2;
     private LruCache<Key, Bitmap> memCache;
     private ImageDecoder imageDecoder;
     private RequestManager requestManager;
@@ -36,6 +36,7 @@ public class MemStoreImp extends MemoryStore {
         Bitmap bm = memCache.get(key);
 
         if (existInRepo(key)){
+            Log.i(TAG, "Bitmap with key " + key.toString() + "has read from mem");
             callback.onReady(bm);
             return null;
         }

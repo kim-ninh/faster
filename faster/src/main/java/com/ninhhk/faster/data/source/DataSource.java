@@ -1,5 +1,7 @@
 package com.ninhhk.faster.data.source;
 
+import androidx.annotation.Nullable;
+
 import com.ninhhk.faster.Callback;
 
 public abstract class DataSource<T> {
@@ -22,5 +24,15 @@ public abstract class DataSource<T> {
     @Override
     public int hashCode() {
         return model.hashCode();
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj instanceof DataSource<?>) {
+            DataSource<?> dataSource = (DataSource<?>) obj;
+
+            return dataSource.model.equals(model);
+        }
+        return false;
     }
 }
