@@ -5,6 +5,8 @@ import android.widget.ImageView;
 
 import com.ninhhk.faster.data.source.DataSource;
 import com.ninhhk.faster.data.source.UrlStringSource;
+import com.ninhhk.faster.transformer.Transformation;
+import com.ninhhk.faster.transformer.TransformationFactory;
 
 public class Request {
 
@@ -97,6 +99,12 @@ public class Request {
 
         public RequestBuilder setListener(Callback<Bitmap> listener) {
             this.listener = listener;
+            return this;
+        }
+
+        public RequestBuilder setScaleType(ImageView.ScaleType scaleType){
+            Transformation transformation = TransformationFactory.get(scaleType);
+            requestOption.setTransformation(transformation);
             return this;
         }
     }
