@@ -3,8 +3,11 @@ package com.ninhhk.faster;
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+
 import com.ninhhk.faster.data.source.DataSource;
 import com.ninhhk.faster.data.source.UrlStringSource;
+import com.ninhhk.faster.transformer.DefaultTransformation;
 import com.ninhhk.faster.transformer.Transformation;
 import com.ninhhk.faster.transformer.TransformationFactory;
 
@@ -56,7 +59,7 @@ public class Request {
             return this;
         }
 
-        public void into(final ImageView imageView) {
+        public void into(@NonNull final ImageView imageView) {
 //            responseDelegate = new Callback<Bitmap>() {
 //                @Override
 //                public void onReady(Bitmap data) {
@@ -68,8 +71,21 @@ public class Request {
                 setDefaultDimension();
             }
 
+            if (scaleTypeUnSet()) {
+                setDefaultScaleType(imageView);
+            }
+
             Request request = build();
             imageLoader.handleRequest(request);
+        }
+
+        private void setDefaultScaleType(ImageView imageView) {
+            ImageView.ScaleType scaleType = imageView.getScaleType();
+            setScaleType(scaleType);
+        }
+
+        private boolean scaleTypeUnSet() {
+            return requestOption.getTransformation() instanceof DefaultTransformation;
         }
 
         private void setDefaultDimension() {
