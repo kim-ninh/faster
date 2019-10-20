@@ -17,8 +17,8 @@ public class BitmapStore implements Callback<Bitmap> {
     private Callback<Bitmap> callback;
 
     public BitmapStore(Context context) {
-        this.diskStore = new DiskStoreImp(context);
-        this.memoryRepo = new MemStoreImp(diskStore);
+        this.diskStore = new DiskStoreLruImp(context);
+        this.memoryRepo = new MemStoreImp(diskStore, context);
         memoryRepo.setCallback(this);
     }
 

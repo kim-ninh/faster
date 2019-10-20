@@ -1,17 +1,13 @@
 package com.ninhhk.faster.data.store;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.util.Log;
 
-import com.ninhhk.faster.BitmapKey;
-import com.ninhhk.faster.BitmapKeyFactory;
 import com.ninhhk.faster.Callback;
-import com.ninhhk.faster.KeyFactory;
-import com.ninhhk.faster.data.source.DataSource;
 import com.ninhhk.faster.Key;
 import com.ninhhk.faster.Request;
 import com.ninhhk.faster.RequestManager;
+import com.ninhhk.faster.data.source.DataSource;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -22,20 +18,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Objects;
 
-import static com.ninhhk.faster.RequestOption.UNSET;
-
 public class DiskStoreImp extends DiskStore {
     private static final int MAX_BUFFER_IN_MB = 4;
     private static final int MAX_BUFFER_IN_BYTE = MAX_BUFFER_IN_MB * 1024 * 1024;
     public static final String TAG = DiskStoreImp.class.getSimpleName();
 
-    private Context context;
     private final String DIR = "faster";
     private RequestManager requestManager = RequestManager.getInstance();
     private File cacheDir;
 
     public DiskStoreImp(Context context) {
-        this.context = context;
+        super(context);
         cacheDir = initSubDir();
     }
 
@@ -52,7 +45,7 @@ public class DiskStoreImp extends DiskStore {
         Objects.requireNonNull(this.callback);
         byte[] bytes;
 
-        if (existInRepo(key)) {
+        if (exists(key)) {
             bytes = openFileWithKey(key);
 
             this.callback.onReady(bytes);
@@ -79,7 +72,7 @@ public class DiskStoreImp extends DiskStore {
     }
 
     @Override
-    protected boolean existInRepo(Key key) {
+    protected boolean exists(Key key) {
         File file = getCacheFile(key);
         return file.exists();
     }

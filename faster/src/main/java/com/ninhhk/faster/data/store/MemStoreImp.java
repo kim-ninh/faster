@@ -1,16 +1,18 @@
 package com.ninhhk.faster.data.store;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 import android.util.LruCache;
 
 import com.ninhhk.faster.Callback;
-import com.ninhhk.faster.decoder.ImageDecoder;
 import com.ninhhk.faster.Key;
-import com.ninhhk.faster.decoder.MatchTargetDimensionImageDecoder;
 import com.ninhhk.faster.Request;
 import com.ninhhk.faster.RequestManager;
 import com.ninhhk.faster.RequestOption;
+import com.ninhhk.faster.decoder.ImageDecoder;
+import com.ninhhk.faster.decoder.MatchTargetDimensionImageDecoder;
 
 import java.util.Objects;
 
@@ -18,16 +20,30 @@ public class MemStoreImp extends MemoryStore {
 
     public static final String TAG = MemStoreImp.class.getSimpleName();
 
-    private static final int MAX_SIZE = 1024 * 1024 * 2;
+    private final int MAX_SIZE;
+
+    public MemStoreImp(DiskStore diskStore, Context context) {
+        super(diskStore);
+        MAX_SIZE = getSuitableSize(context);
+        memCache = new LruCache<>(MAX_SIZE);
+        imageDecoder = new MatchTargetDimensionImageDecoder();
+        requestManager = RequestManager.getInstance();
+    }
+
     private LruCache<Key, Bitmap> memCache;
     private ImageDecoder imageDecoder;
     private RequestManager requestManager;
 
-    public MemStoreImp(DiskStore diskStore) {
-        super(diskStore);
-        memCache = new LruCache<>(MAX_SIZE);
-        imageDecoder = new MatchTargetDimensionImageDecoder();
-        requestManager = RequestManager.getInstance();
+    private static int getSuitableSize(Context context) {
+        int memoryClass = ((ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass();
+        int maxSize;
+        if (memoryClass >= 192) {
+            maxSize = 30;
+        } else {
+            maxSize = 15;
+        }
+        int cacheSize = Math.min(maxSize, memoryClass / 7) * 1024 * 1024;
+        return cacheSize;
     }
 
     @Override
