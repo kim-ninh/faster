@@ -8,6 +8,15 @@ public class TransformationFactory {
         if (scaleType == ImageView.ScaleType.CENTER)
             return new CenterTransformation();
 
-        return null;
+        if (scaleType == ImageView.ScaleType.CENTER_CROP)
+            return new CenterCropTransformation();
+
+        if (scaleType == ImageView.ScaleType.FIT_CENTER)
+            return new FitCenterTransformation();
+
+        if (scaleType == ImageView.ScaleType.MATRIX)
+            return new DefaultTransformation();
+
+        return new DefaultTransformation();
     }
 }

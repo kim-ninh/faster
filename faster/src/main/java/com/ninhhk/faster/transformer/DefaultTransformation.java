@@ -1,10 +1,11 @@
 package com.ninhhk.faster.transformer;
 
-import android.graphics.Bitmap;
+import android.graphics.Matrix;
 
 public class DefaultTransformation extends Transformation {
     @Override
-    public Bitmap transform(Bitmap source, int targetWidth, int targetHeight) {
-        return source;
+    protected Matrix getMatrix(int targetWidth, int targetHeight, int bWidth, int bHeight) {
+        Matrix matrix = new Matrix();
+        return matrix;
     }
 }

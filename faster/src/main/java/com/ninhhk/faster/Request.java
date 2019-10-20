@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 
 import com.ninhhk.faster.data.source.DataSource;
 import com.ninhhk.faster.data.source.UrlStringSource;
-import com.ninhhk.faster.transformer.DefaultTransformation;
 import com.ninhhk.faster.transformer.Transformation;
 import com.ninhhk.faster.transformer.TransformationFactory;
 
@@ -49,6 +48,7 @@ public class Request {
         private DataSource<?> dataSource;
         private Callback listener;
         private ImageLoader imageLoader;
+        private boolean scaleTypeIsSet = false;
 
         public RequestBuilder(ImageLoader imageLoader) {
             this.imageLoader = imageLoader;
@@ -85,7 +85,7 @@ public class Request {
         }
 
         private boolean scaleTypeUnSet() {
-            return requestOption.getTransformation() instanceof DefaultTransformation;
+            return !scaleTypeIsSet;
         }
 
         private void setDefaultDimension() {
@@ -119,6 +119,7 @@ public class Request {
         }
 
         public RequestBuilder setScaleType(ImageView.ScaleType scaleType){
+            scaleTypeIsSet = true;
             Transformation transformation = TransformationFactory.get(scaleType);
             requestOption.setTransformation(transformation);
             return this;
