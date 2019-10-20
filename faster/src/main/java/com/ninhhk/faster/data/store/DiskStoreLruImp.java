@@ -118,7 +118,7 @@ public class DiskStoreLruImp extends DiskStore {
         };
 
         dataSource.setByteLoadSuccess(callback);
-        dataSource.load();
+        dataSource.load(context);
         return new byte[0];
     }
 

@@ -67,7 +67,7 @@ public class DiskStoreImp extends DiskStore {
         };
 
         dataSource.setByteLoadSuccess(callback);
-        dataSource.load();
+        dataSource.load(context);
         return new byte[0];
     }
 

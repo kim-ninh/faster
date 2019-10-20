@@ -43,4 +43,8 @@ public class Faster {
     public void changeCacheStrategy(Cache memCache) {
         this.memCache = memCache;
     }
+
+    public Request.RequestBuilder getRequestBuilder() {
+        return mRequestBuilder;
+    }
 }

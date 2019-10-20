@@ -61,7 +61,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void fetchImage(String imageSource) {
         Faster.getInstance(MainActivity.this)
-                .load(imageSource)
+                .getRequestBuilder()
+                .load(R.drawable.webp_format)
 //                .resize(50, 50)
                 .setListener((bitmap) -> {
                     isLoading = false;

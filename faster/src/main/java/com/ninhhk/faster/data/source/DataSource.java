@@ -1,5 +1,7 @@
 package com.ninhhk.faster.data.source;
 
+import android.content.Context;
+
 import androidx.annotation.Nullable;
 
 import com.ninhhk.faster.Callback;
@@ -17,7 +19,7 @@ public abstract class DataSource<T> {
         this.byteLoad = byteLoad;
     }
 
-    abstract public void load();
+    abstract public void load(Context context);
 
     abstract public String name();
 

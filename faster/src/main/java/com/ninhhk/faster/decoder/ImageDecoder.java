@@ -10,10 +10,6 @@ public abstract class ImageDecoder {
     protected BitmapFactory.Options opts = new BitmapFactory.Options();
     protected RequestOption requestOption;
 
-    public ImageDecoder(RequestOption requestOption) {
-        this.requestOption = requestOption;
-    }
-
     public ImageDecoder(){
 
     }

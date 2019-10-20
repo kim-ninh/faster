@@ -3,9 +3,11 @@ package com.ninhhk.faster;
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 
 import com.ninhhk.faster.data.source.DataSource;
+import com.ninhhk.faster.data.source.DrawableResource;
 import com.ninhhk.faster.data.source.UrlStringSource;
 import com.ninhhk.faster.transformer.Transformation;
 import com.ninhhk.faster.transformer.TransformationFactory;
@@ -56,6 +58,11 @@ public class Request {
 
         public RequestBuilder load(String url) {
             this.dataSource = new UrlStringSource(url);
+            return this;
+        }
+
+        public RequestBuilder load(@DrawableRes int resId) {
+            this.dataSource = new DrawableResource(resId);
             return this;
         }
 

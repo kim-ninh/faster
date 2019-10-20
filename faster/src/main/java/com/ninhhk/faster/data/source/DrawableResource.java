@@ -2,54 +2,39 @@ package com.ninhhk.faster.data.source;
 
 import android.content.Context;
 
-import java.io.BufferedInputStream;
+import androidx.annotation.DrawableRes;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
-public class UrlStringSource extends DataSource<String> {
+public class DrawableResource extends DataSource<Integer> {
 
-    private static final String TAG = UrlStringSource.class.getSimpleName();
     private static final int MAX_BUFFER_IN_MB = 4;
     private static final int MAX_BUFFER_IN_BYTE = MAX_BUFFER_IN_MB * 1024 * 1024;
 
-
-    public UrlStringSource(String model) {
-        super(model);
+    public DrawableResource(@DrawableRes int resId) {
+        super(resId);
     }
 
     @Override
     public void load(Context context) {
-
         Thread t = new Thread(() -> {
-            HttpURLConnection connection;
             InputStream is;
             try {
-                URL url = new URL(UrlStringSource.this.model);
-                connection = (HttpURLConnection) url.openConnection();
-                is = new BufferedInputStream(connection.getInputStream());
+                is = context.getResources().openRawResource(model);
                 readFromStream(is);
-                is.close();
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
+
         t.start();
     }
 
     @Override
     public String name() {
-        String url = model;
-        String remoteFileName;
-        int lastIndexOfSlash;
-
-        lastIndexOfSlash = url.lastIndexOf('/');
-        remoteFileName = url.substring(lastIndexOfSlash + 1);
-
-        return remoteFileName;
+        return "resId_" + model;
     }
 
     private void readFromStream(InputStream is) throws IOException {

@@ -2,13 +2,7 @@ package com.ninhhk.faster.decoder;
 
 import android.graphics.BitmapFactory;
 
-import com.ninhhk.faster.RequestOption;
-
 public class MatchTargetDimensionImageDecoder extends ImageDecoder {
-
-    public MatchTargetDimensionImageDecoder(RequestOption requestOption) {
-        super(requestOption);
-    }
 
     public MatchTargetDimensionImageDecoder() {
     }
