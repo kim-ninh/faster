@@ -16,7 +16,7 @@ import com.ninhhk.faster.Faster;
 public class MainActivity extends AppCompatActivity {
 
 
-    private static final String IMAGE_SOURCE_PNG = "https://dummyimage.com/600x400/000/fff.png&text=PNG+Image";
+    private static final String IMAGE_SOURCE_PNG = "https://dummyimage.com/600x400/000/fff.png&text=600+400";
     private static final String IMAGE_SOURCE_JPG = "https://dummyimage.com/300x100/000/fff.jpg&text=JPG+Image";
     private static final String IMAGE_SOURCE_WEBP = "https://www.gstatic.com/webp/gallery/4.webp";
     private static final String IMAGE_SOURCE_HEIC = "https://nokiatech.github.io/heif/content/images/old_bridge_1440x960.heic";

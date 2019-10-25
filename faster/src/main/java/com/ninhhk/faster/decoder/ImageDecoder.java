@@ -6,6 +6,7 @@ import android.media.Image;
 import android.util.Log;
 
 import com.ninhhk.faster.RequestOption;
+import com.ninhhk.faster.pool.FasterBitmapPool;
 import com.ninhhk.faster.transformer.Transformation;
 
 public abstract class ImageDecoder {
@@ -24,6 +25,9 @@ public abstract class ImageDecoder {
 
         config(bytes);
         opts.inJustDecodeBounds = false;
+        Bitmap reuseBitmap;
+        reuseBitmap = FasterBitmapPool.getInstance().get(requestOption.getFinalWidth(), requestOption.getFinalHeight(), Bitmap.Config.ARGB_8888);
+        opts.inBitmap = reuseBitmap;
         result = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, opts);
 
         Log.i(TAG, "Bitmap after down sample size: " + result.getWidth() + " x " + result.getHeight());

@@ -5,6 +5,8 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 
+import com.ninhhk.faster.pool.FasterBitmapPool;
+
 public abstract class Transformation {
 
     protected abstract Matrix getMatrix(int targetWidth, int targetHeight, int bWidth, int bHeight);
@@ -15,7 +17,8 @@ public abstract class Transformation {
 
         Matrix matrix = getMatrix(targetWidth, targetHeight, bWidth, bHeight);
 
-        Bitmap bitmap = Bitmap.createBitmap(targetWidth, targetHeight, Bitmap.Config.ARGB_8888);
+        FasterBitmapPool bitmapPool = FasterBitmapPool.getInstance();
+        Bitmap bitmap = bitmapPool.get(targetWidth, targetHeight, source.getConfig());
 
         Canvas canvas = new Canvas(bitmap);
         canvas.drawBitmap(source, matrix, new Paint(Paint.DITHER_FLAG | Paint.FILTER_BITMAP_FLAG));

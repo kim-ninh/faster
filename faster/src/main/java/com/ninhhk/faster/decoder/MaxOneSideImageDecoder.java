@@ -13,6 +13,8 @@ public class MaxOneSideImageDecoder extends ImageDecoder {
         int targetWidth = requestOption.getFinalWidth();
         int targetHeight = requestOption.getFinalHeight();
 
+        if (originHeight < targetHeight && originWidth < targetWidth)
+            return;
 
         if (originWidth > originHeight){
             opts.inSampleSize = calculateSampleSize(originWidth, targetWidth);

@@ -7,11 +7,15 @@ import android.util.Log;
 import android.util.LruCache;
 
 import com.ninhhk.faster.Callback;
+import com.ninhhk.faster.Faster;
 import com.ninhhk.faster.Key;
 import com.ninhhk.faster.Request;
 import com.ninhhk.faster.RequestManager;
 import com.ninhhk.faster.RequestOption;
 import com.ninhhk.faster.decoder.ImageDecoder;
+import com.ninhhk.faster.pool.BitmapPool;
+import com.ninhhk.faster.pool.DefaultBitmapPool;
+import com.ninhhk.faster.pool.FasterBitmapPool;
 
 import java.util.Objects;
 
@@ -23,6 +27,7 @@ public class MemStoreImp extends MemoryStore {
 
     private LruCache<Key, Bitmap> memCache;
     private RequestManager requestManager;
+    private FasterBitmapPool pool = FasterBitmapPool.getInstance();
 
     public MemStoreImp(BitmapStore bitmapStore, Context context) {
         super(bitmapStore, context);
@@ -36,6 +41,7 @@ public class MemStoreImp extends MemoryStore {
                 // bitmap has rejected
                 if (evicted && newValue == null){
                     // put to bitmap pool
+                    pool.put(oldValue);
                 }
             }
         };

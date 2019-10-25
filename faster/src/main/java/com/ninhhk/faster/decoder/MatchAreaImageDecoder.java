@@ -13,6 +13,9 @@ public class MatchAreaImageDecoder extends ImageDecoder {
         int requiredSize = requestOption.getFinalHeight();
         int areaLimit = requiredSize * requiredSize;
 
+        if (originWidth * originHeight <= areaLimit)
+            return;
+
         int targetW = (int) Math.sqrt( areaLimit * originWidth / (float) originHeight);
         int targetH = (int) Math.sqrt( areaLimit * originHeight / (float) originWidth);
 
