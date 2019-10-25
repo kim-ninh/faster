@@ -9,7 +9,10 @@ public abstract class DiskStore {
     protected Callback<byte[]> callback;
     protected Context context;
 
-    public DiskStore(Context context) {
+    protected BitmapStore bitmapStore;
+
+    public DiskStore(BitmapStore bitmapStore, Context context) {
+        this.bitmapStore = bitmapStore;
         this.context = context;
     }
 

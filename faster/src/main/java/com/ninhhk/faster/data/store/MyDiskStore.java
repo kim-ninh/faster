@@ -17,9 +17,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Objects;
 
-public class DiskStoreLruImp extends DiskStore {
+public class MyDiskStore extends DiskStore {
 
-    public static final String TAG = DiskStoreLruImp.class.getSimpleName();
+    public static final String TAG = MyDiskStore.class.getSimpleName();
 
     private static final String DIR = "faster";
     private static final int MAX_BUFFER_IN_MB = 4;
@@ -30,8 +30,8 @@ public class DiskStoreLruImp extends DiskStore {
     private RequestManager requestManager = RequestManager.getInstance();
     private DiskLruCache diskLruCache;
 
-    public DiskStoreLruImp(Context context) {
-        super(context);
+    public MyDiskStore(BitmapStore bitmapStore, Context context) {
+        super(bitmapStore, context);
         File directory = getDir();
 
         try {
@@ -114,7 +114,7 @@ public class DiskStoreLruImp extends DiskStore {
         DataSource<?> dataSource = request.getDataSource();
         Callback<byte[]> callback = bytes -> {
             saveToDisk(key, bytes);
-            DiskStoreLruImp.this.callback.onReady(bytes);
+            MyDiskStore.this.callback.onReady(bytes);
         };
 
         dataSource.setByteLoadSuccess(callback);

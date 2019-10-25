@@ -12,7 +12,6 @@ import com.ninhhk.faster.Request;
 import com.ninhhk.faster.RequestManager;
 import com.ninhhk.faster.RequestOption;
 import com.ninhhk.faster.decoder.ImageDecoder;
-import com.ninhhk.faster.decoder.MatchTargetDimensionImageDecoder;
 
 import java.util.Objects;
 
@@ -22,17 +21,26 @@ public class MemStoreImp extends MemoryStore {
 
     private final int MAX_SIZE;
 
-    public MemStoreImp(DiskStore diskStore, Context context) {
-        super(diskStore);
-        MAX_SIZE = getSuitableSize(context);
-        memCache = new LruCache<>(MAX_SIZE);
-        imageDecoder = new MatchTargetDimensionImageDecoder();
-        requestManager = RequestManager.getInstance();
-    }
-
     private LruCache<Key, Bitmap> memCache;
-    private ImageDecoder imageDecoder;
     private RequestManager requestManager;
+
+    public MemStoreImp(BitmapStore bitmapStore, Context context) {
+        super(bitmapStore, context);
+
+        MAX_SIZE = getSuitableSize(context);
+        requestManager = RequestManager.getInstance();
+        memCache = new LruCache<Key, Bitmap>(MAX_SIZE){
+            @Override
+            protected void entryRemoved(boolean evicted, Key key, Bitmap oldValue, Bitmap newValue) {
+
+                // bitmap has rejected
+                if (evicted && newValue == null){
+                    // put to bitmap pool
+                }
+            }
+        };
+
+    }
 
     private static int getSuitableSize(Context context) {
         int memoryClass = ((ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass();
@@ -82,9 +90,10 @@ public class MemStoreImp extends MemoryStore {
     private Bitmap decodeFromBytes(byte[] bytes, Key key) {
         Request request = requestManager.getRequest(key);
         RequestOption requestOption = request.getRequestOption();
+        ImageDecoder decoder = request.getImageDecoder();
 
         Bitmap bitmap;
-        bitmap = imageDecoder.decode(bytes, requestOption);
+        bitmap = decoder.decode(bytes, requestOption);
         return bitmap;
     }
 

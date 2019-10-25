@@ -1,5 +1,6 @@
 package com.example.bitmapplayround;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -9,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.ninhhk.faster.Callback;
 import com.ninhhk.faster.Faster;
 
 public class MainActivity extends AppCompatActivity {
@@ -60,14 +62,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void fetchImage(String imageSource) {
-        Faster.getInstance(MainActivity.this)
-                .getRequestBuilder()
-                .load(R.drawable.webp_format)
-//                .resize(50, 50)
-                .setListener((bitmap) -> {
-                    isLoading = false;
+        Faster.init(MainActivity.this)
+                .load(imageSource)
+                .resize(600)
+                .setListener(new Callback<Bitmap>() {
+                    @Override
+                    public void onReady(Bitmap bitmap) {
+                        isLoading = false;
+                    }
                 })
-                .setScaleType(ImageView.ScaleType.CENTER)
+                .setScaleType(ImageView.ScaleType.CENTER_CROP)
                 .into(imageView);
 
 /*

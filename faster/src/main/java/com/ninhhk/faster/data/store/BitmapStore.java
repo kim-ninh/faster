@@ -7,25 +7,25 @@ import android.os.Looper;
 
 import com.ninhhk.faster.Callback;
 import com.ninhhk.faster.Key;
+import com.ninhhk.faster.decoder.ImageDecoder;
 
 import java.util.Objects;
 
 public class BitmapStore implements Callback<Bitmap> {
     private static Handler mainThreadHandler = new Handler(Looper.getMainLooper());
-    private MemoryStore memoryRepo;
+    private MemoryStore memoryStore;
     private DiskStore diskStore;
     private Callback<Bitmap> callback;
 
     public BitmapStore(Context context) {
-        this.diskStore = new DiskStoreLruImp(context);
-        this.memoryRepo = new MemStoreImp(diskStore, context);
-        memoryRepo.setCallback(this);
+        this.diskStore = new DiskStoreImp(this, context);   // need context for loading from Res, file
+        this.memoryStore = new MemStoreImp(this, context);  // need context for calculate for memory size
     }
 
     public Bitmap load(Key key){
         Objects.requireNonNull(callback);
 
-        memoryRepo.load(key);
+        memoryStore.load(key);
         return null;
     }
 
@@ -39,5 +39,13 @@ public class BitmapStore implements Callback<Bitmap> {
         mainThreadHandler.post(()->{
             callback.onReady(bitmap);
         });
+    }
+
+    public DiskStore getDiskStore() {
+        return diskStore;
+    }
+
+    public MemoryStore getMemoryStore(){
+        return memoryStore;
     }
 }

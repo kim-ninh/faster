@@ -27,8 +27,8 @@ public class DiskStoreImp extends DiskStore {
     private RequestManager requestManager = RequestManager.getInstance();
     private File cacheDir;
 
-    public DiskStoreImp(Context context) {
-        super(context);
+    public DiskStoreImp(BitmapStore bitmapStore, Context context) {
+        super(bitmapStore, context);
         cacheDir = initSubDir();
     }
 

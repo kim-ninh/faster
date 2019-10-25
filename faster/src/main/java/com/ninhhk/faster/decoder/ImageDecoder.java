@@ -2,6 +2,8 @@ package com.ninhhk.faster.decoder;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
+import android.util.Log;
 
 import com.ninhhk.faster.RequestOption;
 import com.ninhhk.faster.transformer.Transformation;
@@ -9,7 +11,7 @@ import com.ninhhk.faster.transformer.Transformation;
 public abstract class ImageDecoder {
     protected BitmapFactory.Options opts = new BitmapFactory.Options();
     protected RequestOption requestOption;
-
+    private static final String TAG = ImageDecoder.class.getSimpleName();
     public ImageDecoder(){
 
     }
@@ -23,6 +25,8 @@ public abstract class ImageDecoder {
         config(bytes);
         opts.inJustDecodeBounds = false;
         result = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, opts);
+
+        Log.i(TAG, "Bitmap after down sample size: " + result.getWidth() + " x " + result.getHeight());
         result = applyTransformation(result);
         return result;
     }

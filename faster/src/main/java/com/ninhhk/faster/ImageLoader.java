@@ -11,17 +11,17 @@ import com.ninhhk.faster.data.store.BitmapStore;
 public class ImageLoader implements Callback<Bitmap> {
 
     private Context context;
-    private BitmapStore bitmapStore;
     private ImageView targetView;
     private Callback<Bitmap> requestListener;
     private RequestManager requestManager = RequestManager.getInstance();
+
+    private BitmapStore bitmapStore;
 
     public ImageLoader(){
         bitmapStore.setCallback(this);
     }
 
     public ImageLoader(Context context) {
-//        this();
         this.context = context;
         bitmapStore = new BitmapStore(context);
         bitmapStore.setCallback(this);
@@ -40,6 +40,7 @@ public class ImageLoader implements Callback<Bitmap> {
     @Override
     public void onReady(Bitmap bitmap) {
         requestManager.clearAllRequests();
+        bitmap.setDensity(context.getResources().getDisplayMetrics().densityDpi);
         if (targetView != null){
             targetView.setImageBitmap(bitmap);
         }

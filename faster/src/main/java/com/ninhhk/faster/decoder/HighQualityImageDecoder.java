@@ -2,9 +2,9 @@ package com.ninhhk.faster.decoder;
 
 import android.graphics.BitmapFactory;
 
-public class MatchTargetDimensionImageDecoder extends ImageDecoder {
+public class HighQualityImageDecoder extends ImageDecoder {
 
-    public MatchTargetDimensionImageDecoder() {
+    public HighQualityImageDecoder() {
     }
 
     @Override
