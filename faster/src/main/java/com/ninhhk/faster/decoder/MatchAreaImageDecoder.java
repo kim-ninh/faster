@@ -1,8 +1,11 @@
 package com.ninhhk.faster.decoder;
 
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 public class MatchAreaImageDecoder extends ImageDecoder {
+    private static final String TAG = MatchAreaImageDecoder.class.getSimpleName();
+
     @Override
     protected void config(byte[] bytes) {
         opts.inJustDecodeBounds = true;
@@ -16,14 +19,17 @@ public class MatchAreaImageDecoder extends ImageDecoder {
         if (originWidth * originHeight <= areaLimit)
             return;
 
-        int targetW = (int) Math.sqrt( areaLimit * originWidth / (float) originHeight);
-        int targetH = (int) Math.sqrt( areaLimit * originHeight / (float) originWidth);
+        int targetW = Math.round((float) Math.sqrt(areaLimit * originWidth / (double) originHeight));
+        int targetH = Math.round((float) Math.sqrt(areaLimit * originHeight / (double) originWidth));
 
         int sampleSize = calculateSampleSize(originWidth, originHeight, areaLimit);
 
         opts.inSampleSize = sampleSize;
         opts.inDensity = Math.max(originWidth, originHeight);
-        opts.inTargetDensity = Math.max(targetW, targetH) * opts.inSampleSize;
+        opts.inTargetDensity = (Math.max(targetW, targetH) - 1) * opts.inSampleSize;
+
+        Log.i(TAG, "Area limit: " + areaLimit);
+        Log.i(TAG, "Target (w_h) : " + targetW + " " + targetH);
     }
 
     private int calculateSampleSize(int originWidth, int originHeight, int areaLimit) {
