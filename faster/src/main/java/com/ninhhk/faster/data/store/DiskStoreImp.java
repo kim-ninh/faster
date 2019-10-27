@@ -3,7 +3,6 @@ package com.ninhhk.faster.data.store;
 import android.content.Context;
 import android.util.Log;
 
-import com.ninhhk.faster.Callback;
 import com.ninhhk.faster.Key;
 import com.ninhhk.faster.Request;
 import com.ninhhk.faster.RequestManager;
@@ -16,7 +15,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Objects;
 
 public class DiskStoreImp extends DiskStore {
     private static final int MAX_BUFFER_IN_MB = 4;
@@ -41,34 +39,24 @@ public class DiskStoreImp extends DiskStore {
     }
 
     @Override
-    public byte[] load(Key key) {
-        Objects.requireNonNull(this.callback);
+    public byte[] load(Key key, Request request) {
         byte[] bytes;
 
         if (exists(key)) {
             bytes = openFileWithKey(key);
 
-            this.callback.onReady(bytes);
             return bytes;
         }
 
-        bytes = loadFromDataSource(key);
+        bytes = loadFromDataSource(key, request.getDataSource());
         return bytes;
     }
 
     // invoke callback.onReady(bytes) when the load is done
     @Override
-    protected byte[] loadFromDataSource(Key key) {
-        Request request = requestManager.getRequest(key);
-        DataSource<?> dataSource = request.getDataSource();
-        Callback<byte[]> callback = bytes -> {
-            saveToDisk(key, bytes);
-            DiskStoreImp.this.callback.onReady(bytes);
-        };
+    protected byte[] loadFromDataSource(Key key, DataSource<?> dataSource) {
 
-        dataSource.setByteLoadSuccess(callback);
-        dataSource.load(context);
-        return new byte[0];
+        return dataSource.load(context);
     }
 
     @Override

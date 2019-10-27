@@ -4,10 +4,8 @@ import android.content.Context;
 import android.util.Log;
 
 import com.jakewharton.disklrucache.DiskLruCache;
-import com.ninhhk.faster.Callback;
 import com.ninhhk.faster.Key;
 import com.ninhhk.faster.Request;
-import com.ninhhk.faster.RequestManager;
 import com.ninhhk.faster.data.source.DataSource;
 
 import java.io.ByteArrayOutputStream;
@@ -15,7 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Objects;
 
 public class MyDiskStore extends DiskStore {
 
@@ -27,7 +24,6 @@ public class MyDiskStore extends DiskStore {
     private final int appVersion = 1;
     private final int valueCount = 1;
     private final long CACHE_SIZE = 1024 * 1024 * 10;
-    private RequestManager requestManager = RequestManager.getInstance();
     private DiskLruCache diskLruCache;
 
     public MyDiskStore(BitmapStore bitmapStore, Context context) {
@@ -49,18 +45,16 @@ public class MyDiskStore extends DiskStore {
     }
 
     @Override
-    public byte[] load(Key key) {
-        Objects.requireNonNull(this.callback);
+    public byte[] load(Key key, Request request) {
         byte[] bytes;
 
         if (exists(key)) {
             bytes = openFileWithKey(key);
 
-            this.callback.onReady(bytes);
             return bytes;
         }
 
-        bytes = loadFromDataSource(key);
+        bytes = loadFromDataSource(key, request.getDataSource());
         return bytes;
     }
 
@@ -101,25 +95,18 @@ public class MyDiskStore extends DiskStore {
     }
 
     private String getFileName(Key key) {
-//        Request request = requestManager.getRequest(key);
-//        DataSource<?> dataSource = request.getDataSource();
-//        String fileName = dataSource.name();
+
         String fileName = String.valueOf(key.hashCode());
         return fileName;
     }
 
     @Override
-    protected byte[] loadFromDataSource(Key key) {
-        Request request = requestManager.getRequest(key);
-        DataSource<?> dataSource = request.getDataSource();
-        Callback<byte[]> callback = bytes -> {
-            saveToDisk(key, bytes);
-            MyDiskStore.this.callback.onReady(bytes);
-        };
+    protected byte[] loadFromDataSource(Key key, DataSource<?> dataSource) {
+        byte[] dataSourceBytes;
 
-        dataSource.setByteLoadSuccess(callback);
-        dataSource.load(context);
-        return new byte[0];
+        dataSourceBytes = dataSource.load(context);
+        saveToDisk(key, dataSourceBytes);
+        return dataSourceBytes;
     }
 
     private void saveToDisk(Key key, byte[] bytes) {

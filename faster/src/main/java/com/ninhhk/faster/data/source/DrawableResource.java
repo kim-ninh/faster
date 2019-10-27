@@ -1,6 +1,7 @@
 package com.ninhhk.faster.data.source;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 import androidx.annotation.DrawableRes;
 
@@ -18,18 +19,17 @@ public class DrawableResource extends DataSource<Integer> {
     }
 
     @Override
-    public void load(Context context) {
-        Thread t = new Thread(() -> {
-            InputStream is;
-            try {
-                is = context.getResources().openRawResource(model);
-                readFromStream(is);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        t.start();
+    public byte[] load(Context context) {
+        byte[] bytes = new byte[0];
+        Resources resources = context.getResources();
+        InputStream is;
+        try {
+            is = resources.openRawResource(model);
+            bytes = readFromStream(is);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bytes;
     }
 
     @Override
@@ -37,7 +37,7 @@ public class DrawableResource extends DataSource<Integer> {
         return "resId_" + model;
     }
 
-    private void readFromStream(InputStream is) throws IOException {
+    private byte[] readFromStream(InputStream is) throws IOException {
         int MAX_BYTE_READ_WRITE = 1024;
         int nByteRead;
         ByteArrayOutputStream array = new ByteArrayOutputStream(MAX_BUFFER_IN_BYTE);
@@ -51,6 +51,6 @@ public class DrawableResource extends DataSource<Integer> {
             array.write(bytes, 0, nByteRead);
         } while (true);
 
-        byteLoad.onReady(array.toByteArray());
+        return array.toByteArray();
     }
 }

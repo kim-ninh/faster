@@ -17,7 +17,6 @@ import com.ninhhk.faster.transformer.TransformationFactory;
 
 public class Request {
 
-//    private final Callback<Bitmap> bitmapLoad;
     private final Callback<Bitmap> listener;
     private DataSource<?> dataSource;
     private RequestOption requestOption;
@@ -77,12 +76,6 @@ public class Request {
         }
 
         public void into(@NonNull final ImageView imageView) {
-//            responseDelegate = new Callback<Bitmap>() {
-//                @Override
-//                public void onReady(Bitmap data) {
-//                 imageView.setImageBitmap(data);
-//                }
-//            };
             targetView = imageView;
             if (dimesionUnset()) {
                 setDefaultDimension();
@@ -129,11 +122,6 @@ public class Request {
         public RequestBuilder resize(int size){
             this.resize(size, size);
             imageDecoder = new MatchAreaImageDecoder();
-            return this;
-        }
-
-        public RequestBuilder onReady(Callback callback) {
-//            this.callback = callback;
             return this;
         }
 

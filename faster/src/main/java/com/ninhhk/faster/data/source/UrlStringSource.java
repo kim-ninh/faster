@@ -21,23 +21,21 @@ public class UrlStringSource extends DataSource<String> {
     }
 
     @Override
-    public void load(Context context) {
+    public byte[] load(Context context) {
+        byte[] bytes = new byte[0];
+        HttpURLConnection connection;
+        InputStream is;
+        try {
+            URL url = new URL(UrlStringSource.this.model);
+            connection = (HttpURLConnection) url.openConnection();
+            is = new BufferedInputStream(connection.getInputStream());
+            bytes = readFromStream(is);
+            is.close();
 
-        Thread t = new Thread(() -> {
-            HttpURLConnection connection;
-            InputStream is;
-            try {
-                URL url = new URL(UrlStringSource.this.model);
-                connection = (HttpURLConnection) url.openConnection();
-                is = new BufferedInputStream(connection.getInputStream());
-                readFromStream(is);
-                is.close();
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-        t.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bytes;
     }
 
     @Override
@@ -52,7 +50,7 @@ public class UrlStringSource extends DataSource<String> {
         return remoteFileName;
     }
 
-    private void readFromStream(InputStream is) throws IOException {
+    private byte[] readFromStream(InputStream is) throws IOException {
         int MAX_BYTE_READ_WRITE = 1024;
         int nByteRead;
         ByteArrayOutputStream array = new ByteArrayOutputStream(MAX_BUFFER_IN_BYTE);
@@ -66,6 +64,6 @@ public class UrlStringSource extends DataSource<String> {
             array.write(bytes, 0, nByteRead);
         } while (true);
 
-        byteLoad.onReady(array.toByteArray());
+        return array.toByteArray();
     }
 }

@@ -32,12 +32,14 @@ public class MainActivity extends AppCompatActivity {
     private boolean isLoading = false;
     private Button btnTestResponsive;
     private EditText txtUrl;
+    private ImageView imageView2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         imageView = findViewById(R.id.imageView);
+        imageView2 = findViewById(R.id.imageView2);
 
         txtUrl = findViewById(R.id.txtUrl);
 
@@ -79,5 +81,10 @@ public class MainActivity extends AppCompatActivity {
                 .load(imageSource)
                 .into(imageView);
 */
+        Faster.init(MainActivity.this)
+                .load(HEAVY_IMAGE_PNG)
+                .resize(300, 300)
+                .setScaleType(ImageView.ScaleType.CENTER_CROP)
+                .into(imageView2);
     }
 }

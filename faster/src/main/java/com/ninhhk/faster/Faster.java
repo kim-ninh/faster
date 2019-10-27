@@ -9,7 +9,7 @@ public class Faster {
 
 
     private Faster(Context context) {
-        imageLoader = new ImageLoader(context);
+        imageLoader = new MyImageLoader(context);
         mRequestBuilder = new Request.RequestBuilder(imageLoader);
     }
 
