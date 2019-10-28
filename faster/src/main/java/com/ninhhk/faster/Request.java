@@ -53,8 +53,8 @@ public class Request {
 
     public static class RequestBuilder {
         public static final String TAG = RequestBuilder.class.getSimpleName();
-        public RequestOption requestOption = new RequestOption();
-        public ImageView targetView;
+        private RequestOption requestOption;
+        private ImageView targetView;
         private DataSource<?> dataSource;
         private Callback listener;
         private ImageLoader imageLoader;
@@ -65,17 +65,23 @@ public class Request {
             this.imageLoader = imageLoader;
         }
 
+        private void preLoadConfig() {
+            requestOption = new RequestOption();
+        }
+
         public RequestBuilder load(String url) {
+            preLoadConfig();
             this.dataSource = new UrlStringSource(url);
             return this;
         }
 
         public RequestBuilder load(@DrawableRes int resId) {
+            preLoadConfig();
             this.dataSource = new DrawableResource(resId);
             return this;
         }
 
-        public void into(@NonNull final ImageView imageView) {
+        public void into(@NonNull ImageView imageView) {
             targetView = imageView;
             if (dimesionUnset()) {
                 setDefaultDimension();

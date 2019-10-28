@@ -8,18 +8,22 @@ import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.widget.ImageView;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class MyImageLoader extends ImageLoader {
 
     private static Handler mainThreadHandler = new Handler(Looper.getMainLooper());
-    private ExecutorService executor;
+    private ThreadPoolExecutor executor;
     private Resources resources;
 
     public MyImageLoader(Context context) {
         super(context);
-        executor = Executors.newCachedThreadPool();
+        executor = new ThreadPoolExecutor(0,4, 60L,
+                TimeUnit.SECONDS,
+                new SynchronousQueue<>());
+
         resources = context.getResources();
     }
 
