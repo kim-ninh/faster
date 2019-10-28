@@ -8,7 +8,6 @@ import com.ninhhk.faster.Request;
 
 public abstract class MemoryStore {
 
-    protected Context context;
     protected DiskStore diskStore;
 
     protected BitmapStore bitmapStore;
@@ -19,7 +18,11 @@ public abstract class MemoryStore {
 
     public MemoryStore(BitmapStore bitmapStore, Context context) {
         this.bitmapStore = bitmapStore;
-        this.context = context;
+        this.diskStore = bitmapStore.getDiskStore();
+    }
+
+    public MemoryStore(BitmapStore bitmapStore) {
+        this.bitmapStore = bitmapStore;
         this.diskStore = bitmapStore.getDiskStore();
     }
 

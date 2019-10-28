@@ -39,7 +39,7 @@ public class MyDiskStore extends DiskStore {
     }
 
     private File getDir() {
-        final String cachePath = context.getCacheDir().getPath();
+        final String cachePath = cacheDir.getPath();
         File file = new File(cachePath + File.separator + DIR);
         return file;
     }

@@ -8,10 +8,11 @@ import androidx.annotation.MainThread;
 
 import com.ninhhk.faster.data.store.BitmapStore;
 
+import java.lang.ref.WeakReference;
+
 public class ImageLoader implements Callback<Bitmap> {
 
-    private Context context;
-    private ImageView targetView;
+    private WeakReference<ImageView> targetView;
     private Callback<Bitmap> requestListener;
 
     protected BitmapStore bitmapStore;
@@ -20,7 +21,6 @@ public class ImageLoader implements Callback<Bitmap> {
     }
 
     public ImageLoader(Context context) {
-        this.context = context;
         bitmapStore = new BitmapStore(context);
     }
 
@@ -35,9 +35,9 @@ public class ImageLoader implements Callback<Bitmap> {
     @MainThread
     @Override
     public void onReady(Bitmap bitmap) {
-        bitmap.setDensity(context.getResources().getDisplayMetrics().densityDpi);
-        if (targetView != null){
-            targetView.setImageBitmap(bitmap);
+        ImageView imageView = targetView.get();
+        if (imageView != null){
+            imageView.setImageBitmap(bitmap);
         }
 
         if (requestListener != null){

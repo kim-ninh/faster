@@ -8,6 +8,7 @@ import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.widget.ImageView;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -49,7 +50,7 @@ public class MyImageLoader extends ImageLoader {
 
     private class LoadImageTask implements Runnable, Callback<Bitmap> {
         private Request request;
-        private ImageView targetView;
+        private WeakReference<ImageView> targetView;
         private Callback<Bitmap> requestListener;
 
         public LoadImageTask(Request request) {
@@ -70,8 +71,10 @@ public class MyImageLoader extends ImageLoader {
             mainThreadHandler.post(() -> {
                 DisplayMetrics displayMetrics = resources.getDisplayMetrics();
                 bitmap.setDensity(displayMetrics.densityDpi);
-                if (targetView != null) {
-                    targetView.setImageBitmap(bitmap);
+
+                ImageView imageView = targetView.get();
+                if (imageView != null) {
+                    imageView.setImageBitmap(bitmap);
                 }
 
                 if (requestListener != null) {

@@ -2,7 +2,6 @@ package com.ninhhk.faster.decoder;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.util.Log;
 
 import com.ninhhk.faster.RequestOption;

@@ -15,12 +15,14 @@ import com.ninhhk.faster.decoder.MaxOneSideImageDecoder;
 import com.ninhhk.faster.transformer.Transformation;
 import com.ninhhk.faster.transformer.TransformationFactory;
 
+import java.lang.ref.WeakReference;
+
 public class Request {
 
     private final Callback<Bitmap> listener;
     private DataSource<?> dataSource;
     private RequestOption requestOption;
-    private ImageView targetView;
+    private WeakReference<ImageView> targetView;
     private ImageDecoder imageDecoder;
 
     public Request(RequestBuilder builder) {
@@ -43,7 +45,7 @@ public class Request {
         return requestOption;
     }
 
-    public ImageView getTargetView() {
+    public WeakReference<ImageView> getTargetView() {
         return targetView;
     }
 
@@ -54,7 +56,7 @@ public class Request {
     public static class RequestBuilder {
         public static final String TAG = RequestBuilder.class.getSimpleName();
         private RequestOption requestOption;
-        private ImageView targetView;
+        private WeakReference<ImageView> targetView;
         private DataSource<?> dataSource;
         private Callback listener;
         private ImageLoader imageLoader;
@@ -82,7 +84,7 @@ public class Request {
         }
 
         public void into(@NonNull ImageView imageView) {
-            targetView = imageView;
+            targetView = new WeakReference<>(imageView);
             if (dimesionUnset()) {
                 setDefaultDimension();
             }
@@ -105,8 +107,12 @@ public class Request {
         }
 
         private void setDefaultDimension() {
-            requestOption.setFinalWidth(targetView.getWidth());
-            requestOption.setFinalHeight(targetView.getHeight());
+            ImageView imageView = this.targetView.get();
+            if (imageView != null){
+                int width = imageView.getWidth();
+                int height = imageView.getHeight();
+                resize(width, height);
+            }
         }
 
         private boolean dimesionUnset() {

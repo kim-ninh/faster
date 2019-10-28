@@ -53,7 +53,7 @@
         android:layout_marginTop="126dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="https://dummyimage.com/300x100/000/fff.jpg&amp;text=JPG+Image"
+        android:text="https://dummyimage.com/1920x1080/000/fff.jpg&amp;text=JPG+Image"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
 

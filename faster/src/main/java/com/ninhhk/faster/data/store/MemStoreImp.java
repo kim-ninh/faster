@@ -22,7 +22,7 @@ public class MemStoreImp extends MemoryStore {
     private FasterBitmapPool pool = FasterBitmapPool.getInstance();
 
     public MemStoreImp(BitmapStore bitmapStore, Context context) {
-        super(bitmapStore, context);
+        super(bitmapStore);
 
         MAX_SIZE = getSuitableSize(context);
         memCache = new LruCache<Key, Bitmap>(MAX_SIZE){
