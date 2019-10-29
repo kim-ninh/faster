@@ -1,6 +1,7 @@
 package com.ninhhk.faster;
 
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.widget.ImageView;
 
 import androidx.annotation.DrawableRes;
@@ -8,6 +9,7 @@ import androidx.annotation.NonNull;
 
 import com.ninhhk.faster.data.source.DataSource;
 import com.ninhhk.faster.data.source.DrawableResource;
+import com.ninhhk.faster.data.source.UriSourceFactory;
 import com.ninhhk.faster.data.source.UrlStringSource;
 import com.ninhhk.faster.decoder.ImageDecoder;
 import com.ninhhk.faster.decoder.MatchAreaImageDecoder;
@@ -146,6 +148,12 @@ public class Request {
             scaleTypeIsSet = true;
             Transformation transformation = TransformationFactory.get(scaleType);
             requestOption.setTransformation(transformation);
+            return this;
+        }
+
+        public Builder load(Uri uri) {
+            preLoadConfig();
+            dataSource = UriSourceFactory.get(uri);
             return this;
         }
     }

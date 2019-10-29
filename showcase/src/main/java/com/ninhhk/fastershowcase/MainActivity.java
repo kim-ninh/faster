@@ -1,5 +1,7 @@
 package com.ninhhk.fastershowcase;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -10,6 +12,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.ninhhk.faster.Faster;
@@ -17,6 +20,9 @@ import com.ninhhk.faster.Request;
 
 public class MainActivity extends AppCompatActivity
         implements AdapterView.OnItemSelectedListener, View.OnClickListener {
+
+    private static final String INTENT_IMAGE_TYPE = "image/*";
+    private static final int REQUEST_CODE = 1234;
 
     private ImageView imageView;
 
@@ -124,6 +130,9 @@ public class MainActivity extends AppCompatActivity
                 textView.setVisibility(View.VISIBLE);
                 spinnerLinks.setVisibility(View.GONE);
 
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT).setType(INTENT_IMAGE_TYPE);
+                startActivityForResult(intent, REQUEST_CODE);
+
             }else if (sourceType[position].equals("Server")){
                 spinnerLinks.setVisibility(View.VISIBLE);
                 textView.setVisibility(View.GONE);
@@ -176,6 +185,16 @@ public class MainActivity extends AppCompatActivity
             }
         }else if (v == buttonLoad){
             requestBuilder.into(imageView);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && data != null){
+            Uri image = data.getData();
+            textView.setText(image.toString());
+            requestBuilder.load(image);
         }
     }
 }
