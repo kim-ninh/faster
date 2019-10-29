@@ -20,10 +20,17 @@ public class MaxOneSideImageDecoder extends ImageDecoder {
             opts.inSampleSize = calculateSampleSize(originWidth, targetWidth);
             opts.inDensity = originWidth;
             opts.inTargetDensity = targetWidth * opts.inSampleSize;
+
+            int scaledSize = Math.round((float) originHeight / opts.inSampleSize * opts.inTargetDensity / opts.inDensity)  ;
+            requestOption.setFinalHeight(scaledSize + 1);
+
         }else {
             opts.inSampleSize = calculateSampleSize(originHeight, targetHeight);
             opts.inDensity = originHeight;
             opts.inTargetDensity = targetHeight * opts.inSampleSize;
+
+            int scaledSize = Math.round((float) originHeight / opts.inSampleSize * opts.inTargetDensity / opts.inDensity)  ;
+            requestOption.setFinalWidth(scaledSize + 1);
         }
     }
 
