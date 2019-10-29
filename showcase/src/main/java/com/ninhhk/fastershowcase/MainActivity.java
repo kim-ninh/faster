@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity
         bindData();
 
         spinnerSourceType.setOnItemSelectedListener(this);
+        textView.setOnClickListener(this);
         spinnerLinks.setOnItemSelectedListener(this);
         spinnerImgSize.setOnItemSelectedListener(this);
         spinnerScale.setOnItemSelectedListener(this);
@@ -129,9 +130,7 @@ public class MainActivity extends AppCompatActivity
             {
                 textView.setVisibility(View.VISIBLE);
                 spinnerLinks.setVisibility(View.GONE);
-
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT).setType(INTENT_IMAGE_TYPE);
-                startActivityForResult(intent, REQUEST_CODE);
+                selectImage();
 
             }else if (sourceType[position].equals("Server")){
                 spinnerLinks.setVisibility(View.VISIBLE);
@@ -168,6 +167,11 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private void selectImage() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT).setType(INTENT_IMAGE_TYPE);
+        startActivityForResult(intent, REQUEST_CODE);
+    }
+
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
@@ -185,6 +189,8 @@ public class MainActivity extends AppCompatActivity
             }
         }else if (v == buttonLoad){
             requestBuilder.into(imageView);
+        }else if (v == textView){
+            selectImage();
         }
     }
 
