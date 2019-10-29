@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="image_sizes">
+        <item>1920 1080</item>
+        <item>1280 1280</item>
+        <item>600 400</item>
+        <item>640 360</item>
+        <item>600 600</item>
+    </string-array>
+</resources>

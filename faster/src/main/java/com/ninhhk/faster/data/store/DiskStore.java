@@ -24,4 +24,6 @@ public abstract class DiskStore {
     protected abstract byte[] loadFromDataSource(Key key, DataSource<?> dataSource);
 
     protected abstract boolean exists(Key key);
+
+    public abstract void clear();
 }

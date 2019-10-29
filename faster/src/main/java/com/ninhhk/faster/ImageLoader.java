@@ -44,4 +44,8 @@ public class ImageLoader implements Callback<Bitmap> {
             requestListener.onReady(bitmap);
         }
     }
+
+    public void clearCache() {
+        bitmapStore.clearCache();
+    }
 }

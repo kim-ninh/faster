@@ -139,4 +139,13 @@ public class MyDiskStore extends DiskStore {
 
         return snapshot != null;
     }
+
+    @Override
+    public void clear() {
+        try {
+            diskLruCache.delete();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

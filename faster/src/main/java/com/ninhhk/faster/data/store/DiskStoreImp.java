@@ -1,6 +1,7 @@
 package com.ninhhk.faster.data.store;
 
 import android.content.Context;
+import android.os.FileUtils;
 import android.util.Log;
 
 import com.ninhhk.faster.Key;
@@ -63,6 +64,11 @@ public class DiskStoreImp extends DiskStore {
     protected boolean exists(Key key) {
         File file = getCacheFile(key);
         return file.exists();
+    }
+
+    @Override
+    public void clear() {
+        // delete file recursive
     }
 
     private void saveToDisk(Key key, byte[] bytes) {

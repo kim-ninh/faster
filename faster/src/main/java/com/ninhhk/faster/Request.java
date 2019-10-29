@@ -25,7 +25,7 @@ public class Request {
     private WeakReference<ImageView> targetView;
     private ImageDecoder imageDecoder;
 
-    public Request(RequestBuilder builder) {
+    public Request(Builder builder) {
         this.dataSource = builder.dataSource;
         this.listener = builder.listener;
         this.requestOption = builder.requestOption;
@@ -53,8 +53,8 @@ public class Request {
         return imageDecoder;
     }
 
-    public static class RequestBuilder {
-        public static final String TAG = RequestBuilder.class.getSimpleName();
+    public static class Builder {
+        public static final String TAG = Builder.class.getSimpleName();
         private RequestOption requestOption;
         private WeakReference<ImageView> targetView;
         private DataSource<?> dataSource;
@@ -63,7 +63,7 @@ public class Request {
         private ImageDecoder imageDecoder;
         private boolean scaleTypeIsSet = false;
 
-        public RequestBuilder(ImageLoader imageLoader) {
+        public Builder(ImageLoader imageLoader) {
             this.imageLoader = imageLoader;
         }
 
@@ -71,13 +71,13 @@ public class Request {
             requestOption = new RequestOption();
         }
 
-        public RequestBuilder load(String url) {
+        public Builder load(String url) {
             preLoadConfig();
             this.dataSource = new UrlStringSource(url);
             return this;
         }
 
-        public RequestBuilder load(@DrawableRes int resId) {
+        public Builder load(@DrawableRes int resId) {
             preLoadConfig();
             this.dataSource = new DrawableResource(resId);
             return this;
@@ -124,25 +124,25 @@ public class Request {
             return new Request(this);
         }
 
-        public RequestBuilder resize(int targetWidth, int targetHeight) {
+        public Builder resize(int targetWidth, int targetHeight) {
             requestOption.setFinalHeight(targetHeight);
             requestOption.setFinalWidth(targetWidth);
             imageDecoder = new MaxOneSideImageDecoder();
             return this;
         }
 
-        public RequestBuilder resize(int size){
+        public Builder resize(int size){
             this.resize(size, size);
             imageDecoder = new MatchAreaImageDecoder();
             return this;
         }
 
-        public RequestBuilder setListener(Callback<Bitmap> listener) {
+        public Builder setListener(Callback<Bitmap> listener) {
             this.listener = listener;
             return this;
         }
 
-        public RequestBuilder setScaleType(ImageView.ScaleType scaleType){
+        public Builder setScaleType(ImageView.ScaleType scaleType){
             scaleTypeIsSet = true;
             Transformation transformation = TransformationFactory.get(scaleType);
             requestOption.setTransformation(transformation);

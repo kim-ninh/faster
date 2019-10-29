@@ -98,4 +98,9 @@ public class MemStoreImp extends MemoryStore {
     protected boolean existInRepo(Key key) {
         return memCache.get(key) != null;
     }
+
+    @Override
+    public void clear() {
+        memCache.evictAll();
+    }
 }

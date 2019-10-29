@@ -5,16 +5,16 @@ import android.content.Context;
 public class Faster {
     private static Faster mInstance = null;
     private final ImageLoader imageLoader;
-    private Request.RequestBuilder mRequestBuilder;
+    private Request.Builder mBuilder;
 
 
     private Faster(Context context) {
         imageLoader = new MyImageLoader(context);
-        mRequestBuilder = new Request.RequestBuilder(imageLoader);
+        mBuilder = new Request.Builder(imageLoader);
 
     }
 
-    public static Request.RequestBuilder init(Context context){
+    public static Request.Builder init(Context context){
         mInstance = getInstance(context.getApplicationContext());
         return mInstance.getRequestBuilder();
     }
@@ -36,7 +36,11 @@ public class Faster {
         return mInstance;
     }
 
-    public Request.RequestBuilder getRequestBuilder() {
-        return mRequestBuilder;
+    public Request.Builder getRequestBuilder() {
+        return mBuilder;
+    }
+
+    public void clearCache() {
+        imageLoader.clearCache();
     }
 }

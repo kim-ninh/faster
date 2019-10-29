@@ -32,4 +32,5 @@ public abstract class MemoryStore {
 
     protected abstract boolean existInRepo(Key key);
 
+    public abstract void clear();
 }

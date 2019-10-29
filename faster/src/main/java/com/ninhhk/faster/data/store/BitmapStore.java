@@ -27,4 +27,9 @@ public class BitmapStore {
     public MemoryStore getMemoryStore(){
         return memoryStore;
     }
+
+    public void clearCache() {
+        memoryStore.clear();
+        diskStore.clear();
+    }
 }

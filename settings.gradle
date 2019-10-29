@@ -1,2 +1,2 @@
-include ':app', ':faster'
+include ':app', ':faster', ':showcase'
 rootProject.name='faster'

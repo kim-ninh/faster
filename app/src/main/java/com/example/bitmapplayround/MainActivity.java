@@ -1,6 +1,7 @@
 package com.example.bitmapplayround;
 
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -8,8 +9,14 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.ninhhk.faster.Callback;
 import com.ninhhk.faster.Faster;
 
@@ -51,11 +58,27 @@ public class MainActivity extends AppCompatActivity {
                 isLoading = true;
             }
         });
-
         btnTestResponsive = findViewById(R.id.button2);
         btnTestResponsive.setOnClickListener((View v) -> {
             Toast.makeText(MainActivity.this, "This button is responsive", Toast.LENGTH_SHORT).show();
         });
+
+        Glide.with(MainActivity.this)
+                .load(IMAGE_SOURCE_WEBP)
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        int w = resource.getIntrinsicWidth();
+                        int h = resource.getIntrinsicHeight();
+                        return false;
+                    }
+                })
+                .into(imageView);
     }
 
     @Override
