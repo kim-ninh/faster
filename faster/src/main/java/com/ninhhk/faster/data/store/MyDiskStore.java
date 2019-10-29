@@ -19,11 +19,11 @@ public class MyDiskStore extends DiskStore {
     public static final String TAG = MyDiskStore.class.getSimpleName();
 
     private static final String DIR = "faster";
-    private static final int MAX_BUFFER_IN_MB = 4;
+    private static final int MAX_BUFFER_IN_MB = 15;
     private static final int MAX_BUFFER_IN_BYTE = MAX_BUFFER_IN_MB * 1024 * 1024;
     private final int appVersion = 1;
     private final int valueCount = 1;
-    private final long CACHE_SIZE = 1024 * 1024 * 10;
+    private final long CACHE_SIZE = 1024 * 1024 * MAX_BUFFER_IN_MB;
     private DiskLruCache diskLruCache;
 
     public MyDiskStore(BitmapStore bitmapStore, Context context) {
