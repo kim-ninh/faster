@@ -1,6 +1,7 @@
 package com.ninhhk.fastershowcase;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.ninhhk.faster.Callback;
 import com.ninhhk.faster.Faster;
 import com.ninhhk.faster.Request;
 
@@ -25,6 +27,8 @@ public class MainActivity extends AppCompatActivity
     private static final int REQUEST_CODE = 1234;
 
     private ImageView imageView;
+
+    private TextView bitmapSize;
 
     private Spinner spinnerSourceType;
     private TextView textView;
@@ -93,6 +97,8 @@ public class MainActivity extends AppCompatActivity
     private void setUpView() {
         imageView = findViewById(R.id.imageView);
 
+        bitmapSize = findViewById(R.id.bitmapSize);
+
         spinnerSourceType = findViewById(R.id.spinnerSrcType);
         textView = findViewById(R.id.textView);
         spinnerLinks = findViewById(R.id.spinnerLink);
@@ -141,6 +147,7 @@ public class MainActivity extends AppCompatActivity
 
             if (spinnerLinks.getVisibility() == View.VISIBLE){
                 requestBuilder.load(links[position]);
+                triggerSelectCurrent();
             }
         }else if (parent == spinnerImgSize){
 
@@ -188,10 +195,40 @@ public class MainActivity extends AppCompatActivity
                 faster.clearCache();
             }
         }else if (v == buttonLoad){
-            requestBuilder.into(imageView);
+            requestBuilder.setListener(new Callback<Bitmap>() {
+                @Override
+                public void onReady(Bitmap data) {
+                    int w = data.getWidth();
+                    int h = data.getHeight();
+
+                    String text = "Width: " + w + " Height: " + h;
+                    bitmapSize.setText(text);
+                }
+            }).into(imageView);
+
+            int srcTypePos = spinnerSourceType.getSelectedItemPosition();
+            int linkPos = spinnerLinks.getSelectedItemPosition();
+            String txtUri = textView.getText().toString();
+
+
+            if (sourceType[srcTypePos].equals("Server")){
+                spinnerLinks.setSelection(linkPos);
+            }else {
+                requestBuilder.load(Uri.parse(txtUri));
+            }
+            triggerSelectCurrent();
         }else if (v == textView){
             selectImage();
         }
+    }
+
+    private void triggerSelectCurrent() {
+
+        int imgSizePos = spinnerImgSize.getSelectedItemPosition();
+        int scalePos = spinnerScale.getSelectedItemPosition();
+
+        spinnerImgSize.setSelection(imgSizePos);
+        spinnerScale.setSelection(scalePos);
     }
 
     @Override

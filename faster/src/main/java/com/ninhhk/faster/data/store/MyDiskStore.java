@@ -28,7 +28,14 @@ public class MyDiskStore extends DiskStore {
 
     public MyDiskStore(BitmapStore bitmapStore, Context context) {
         super(bitmapStore, context);
+        openIfClose();
+    }
+
+    private void openIfClose() {
         File directory = getDir();
+
+        if (diskLruCache != null && !diskLruCache.isClosed())
+            return;
 
         try {
             diskLruCache = DiskLruCache.open(directory, appVersion, valueCount, CACHE_SIZE);
@@ -47,6 +54,8 @@ public class MyDiskStore extends DiskStore {
     @Override
     public byte[] load(Key key, Request request) {
         byte[] bytes;
+
+        openIfClose();
 
         if (exists(key)) {
             bytes = openFileWithKey(key);

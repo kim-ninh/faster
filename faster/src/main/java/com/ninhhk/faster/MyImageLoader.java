@@ -61,9 +61,14 @@ public class MyImageLoader extends ImageLoader {
 
         @Override
         public void run() {
-            Key bitmapKey = new BitmapKeyFactory().build(request);
-            Bitmap bitmap = bitmapStore.load(bitmapKey, request);
-            onReady(bitmap);
+            try{
+                Key bitmapKey = new BitmapKeyFactory().build(request);
+                Bitmap bitmap = bitmapStore.load(bitmapKey, request);
+                onReady(bitmap);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
         }
 
         @Override
