@@ -16,16 +16,18 @@ public abstract class ImageDecoder {
 
     }
 
-    abstract protected void config(byte[] bytes);
+    abstract protected int[] config(byte[] bytes);
 
     public Bitmap decode(byte[] bytes, RequestOption requestOption) {
         Bitmap result;
         this.requestOption = requestOption;
 
-        config(bytes);
+        int[] decodedSize = config(bytes);
         opts.inJustDecodeBounds = false;
         Bitmap reuseBitmap;
-        reuseBitmap = FasterBitmapPool.getInstance().get(requestOption.getFinalWidth(), requestOption.getFinalHeight(), Bitmap.Config.ARGB_8888);
+
+        // reuseBitmap must have decoded size dimension!!!
+        reuseBitmap = FasterBitmapPool.getInstance().get(decodedSize[0], decodedSize[1], Bitmap.Config.ARGB_8888);
         opts.inBitmap = reuseBitmap;
         result = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, opts);
 
@@ -36,6 +38,7 @@ public abstract class ImageDecoder {
 
     private Bitmap applyTransformation(Bitmap source) {
         Transformation transformation = requestOption.getTransformation();
+        // transform bitmap must have request dimension size (  Faster.with().resize(width, height) )
         return transformation.transform(source, requestOption.getFinalWidth(), requestOption.getFinalHeight());
     }
 }

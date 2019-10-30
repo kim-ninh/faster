@@ -7,7 +7,7 @@ public class MatchAreaImageDecoder extends ImageDecoder {
     private static final String TAG = MatchAreaImageDecoder.class.getSimpleName();
 
     @Override
-    protected void config(byte[] bytes) {
+    protected int[] config(byte[] bytes) {
         opts.inJustDecodeBounds = true;
         BitmapFactory.decodeByteArray(bytes, 0, bytes.length, opts);
         int originWidth = opts.outWidth;
@@ -16,8 +16,13 @@ public class MatchAreaImageDecoder extends ImageDecoder {
         int requiredSize = requestOption.getFinalHeight();
         int areaLimit = requiredSize * requiredSize;
 
-        if (originWidth * originHeight <= areaLimit)
-            return;
+        int decodedWidth, decodedHeight;
+        decodedWidth = originWidth;
+        decodedHeight = originHeight;
+
+        if (originWidth * originHeight <= areaLimit) {
+            return new int[]{decodedWidth, decodedHeight};
+        }
 
         int targetW = Math.round((float) Math.sqrt(areaLimit * originWidth / (double) originHeight));
         int targetH = Math.round((float) Math.sqrt(areaLimit * originHeight / (double) originWidth));
@@ -30,8 +35,9 @@ public class MatchAreaImageDecoder extends ImageDecoder {
 
         Log.i(TAG, "Area limit: " + areaLimit);
         Log.i(TAG, "Target (w_h) : " + targetW + " " + targetH);
-        requestOption.setFinalWidth(targetW);
-        requestOption.setFinalHeight(targetH);
+        decodedWidth = targetW;
+        decodedHeight = targetH;
+        return new int[]{decodedWidth, decodedHeight};
     }
 
     private int calculateSampleSize(int originWidth, int originHeight, int areaLimit) {

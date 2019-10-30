@@ -96,6 +96,7 @@ public class Request {
             }
 
             Request request = build();
+            imageView.setScaleType(ImageView.ScaleType.MATRIX);
             imageLoader.handleRequest(request);
         }
 

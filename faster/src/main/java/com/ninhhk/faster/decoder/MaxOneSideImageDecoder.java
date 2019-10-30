@@ -4,7 +4,7 @@ import android.graphics.BitmapFactory;
 
 public class MaxOneSideImageDecoder extends ImageDecoder {
     @Override
-    protected void config(byte[] bytes) {
+    protected int[] config(byte[] bytes) {
         opts.inJustDecodeBounds = true;
         BitmapFactory.decodeByteArray(bytes, 0, bytes.length , opts);
         int originWidth = opts.outWidth;
@@ -13,8 +13,14 @@ public class MaxOneSideImageDecoder extends ImageDecoder {
         int targetWidth = requestOption.getFinalWidth();
         int targetHeight = requestOption.getFinalHeight();
 
-        if (originHeight < targetHeight && originWidth < targetWidth)
-            return;
+        int decodedWidth, decodedHeight;
+
+        decodedWidth = targetWidth;
+        decodedHeight = targetHeight;
+
+        if (originHeight < targetHeight && originWidth < targetWidth) {
+            return new int[]{decodedWidth, decodedHeight};
+        }
 
         if (originWidth > originHeight){
             opts.inSampleSize = calculateSampleSize(originWidth, targetWidth);
@@ -22,7 +28,7 @@ public class MaxOneSideImageDecoder extends ImageDecoder {
             opts.inTargetDensity = targetWidth * opts.inSampleSize;
 
             int scaledSize = Math.round((float) originHeight / opts.inSampleSize * opts.inTargetDensity / opts.inDensity)  ;
-            requestOption.setFinalHeight(scaledSize + 1);
+            decodedHeight = scaledSize + 1;
 
         }else {
             opts.inSampleSize = calculateSampleSize(originHeight, targetHeight);
@@ -30,8 +36,10 @@ public class MaxOneSideImageDecoder extends ImageDecoder {
             opts.inTargetDensity = targetHeight * opts.inSampleSize;
 
             int scaledSize = Math.round((float) originHeight / opts.inSampleSize * opts.inTargetDensity / opts.inDensity)  ;
-            requestOption.setFinalWidth(scaledSize + 1);
+            decodedWidth = scaledSize + 1;
         }
+
+        return new int[]{decodedWidth, decodedHeight};
     }
 
     private int calculateSampleSize(int originSize, int requiredSize) {

@@ -8,13 +8,14 @@ public class HighQualityImageDecoder extends ImageDecoder {
     }
 
     @Override
-    protected void config(byte[] bytes) {
+    protected int[] config(byte[] bytes) {
         opts.inJustDecodeBounds = true;
         BitmapFactory.decodeByteArray(bytes, 0, bytes.length , opts);
         int originWidth = opts.outWidth;
         int originHeight = opts.outHeight;
 
         opts.inSampleSize = calculateSampleSize(originWidth, originHeight);
+        return new int[]{originWidth / opts.inSampleSize, originHeight / opts.inSampleSize};
     }
 
     private int calculateSampleSize(int originWidth, int originHeight){
