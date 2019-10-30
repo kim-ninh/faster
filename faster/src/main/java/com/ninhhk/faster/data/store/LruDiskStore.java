@@ -14,9 +14,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class MyDiskStore extends DiskStore {
+public class LruDiskStore extends DiskStore {
 
-    public static final String TAG = MyDiskStore.class.getSimpleName();
+    public static final String TAG = LruDiskStore.class.getSimpleName();
 
     private static final String DIR = "faster";
     private static final int MAX_BUFFER_IN_MB = 15;
@@ -26,7 +26,7 @@ public class MyDiskStore extends DiskStore {
     private final long CACHE_SIZE = 1024 * 1024 * MAX_BUFFER_IN_MB;
     private DiskLruCache diskLruCache;
 
-    public MyDiskStore(BitmapStore bitmapStore, Context context) {
+    public LruDiskStore(BitmapStore bitmapStore, Context context) {
         super(bitmapStore, context);
         openIfClose();
     }

@@ -12,16 +12,16 @@ import com.ninhhk.faster.RequestOption;
 import com.ninhhk.faster.decoder.ImageDecoder;
 import com.ninhhk.faster.pool.FasterBitmapPool;
 
-public class MemStoreImp extends MemoryStore {
+public class LruMemoryStore extends MemoryStore {
 
-    public static final String TAG = MemStoreImp.class.getSimpleName();
+    public static final String TAG = LruMemoryStore.class.getSimpleName();
 
     private final int MAX_SIZE;
 
     private LruCache<Key, Bitmap> memCache;
     private FasterBitmapPool pool = FasterBitmapPool.getInstance();
 
-    public MemStoreImp(BitmapStore bitmapStore, Context context) {
+    public LruMemoryStore(BitmapStore bitmapStore, Context context) {
         super(bitmapStore);
 
         MAX_SIZE = getSuitableSize(context);
@@ -55,7 +55,7 @@ public class MemStoreImp extends MemoryStore {
     public Bitmap load(Key key, Request request) {
         Bitmap bm = memCache.get(key);
 
-        if (existInRepo(key)){
+        if (exists(key)) {
             Log.i(TAG, "Bitmap with key " + key.toString() + "has read from mem");
             return bm;
         }
@@ -75,7 +75,7 @@ public class MemStoreImp extends MemoryStore {
     }
 
     @Override
-    public byte[] loadFromDisk(Key key, Request request) {
+    protected byte[] loadFromDisk(Key key, Request request) {
 
         return diskStore.load(key, request);
     }
@@ -95,7 +95,7 @@ public class MemStoreImp extends MemoryStore {
     }
 
     @Override
-    protected boolean existInRepo(Key key) {
+    protected boolean exists(Key key) {
         return memCache.get(key) != null;
     }
 

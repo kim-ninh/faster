@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -69,7 +68,7 @@ public class MainActivity extends AppCompatActivity
         buttonClearCache.setOnClickListener(this);
         buttonLoad.setOnClickListener(this);
 
-        requestBuilder = Faster.init(MainActivity.this);
+        requestBuilder = Faster.with(MainActivity.this);
 
     }
 
@@ -170,7 +169,7 @@ public class MainActivity extends AppCompatActivity
                 imgScaleType = ImageView.ScaleType.CENTER;
             }
 
-            requestBuilder.setScaleType(imgScaleType);
+            requestBuilder.transform(imgScaleType);
         }
     }
 

@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void fetchImage(String imageSource) {
-        Faster.init(MainActivity.this)
+        Faster.with(MainActivity.this)
                 .load(imageSource)
                 .resize(600)
                 .setListener(new Callback<Bitmap>() {
@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
                         isLoading = false;
                     }
                 })
-                .setScaleType(ImageView.ScaleType.CENTER_CROP)
+                .transform(ImageView.ScaleType.CENTER_CROP)
                 .into(imageView);
 
 /*
@@ -104,10 +104,10 @@ public class MainActivity extends AppCompatActivity {
                 .load(imageSource)
                 .into(imageView);
 */
-        Faster.init(MainActivity.this)
+        Faster.with(MainActivity.this)
                 .load(HEAVY_IMAGE_PNG)
                 .resize(300, 300)
-                .setScaleType(ImageView.ScaleType.CENTER_CROP)
+                .transform(ImageView.ScaleType.CENTER_CROP)
                 .into(imageView2);
     }
 }

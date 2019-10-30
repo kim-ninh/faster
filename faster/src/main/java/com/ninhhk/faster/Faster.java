@@ -14,7 +14,7 @@ public class Faster {
 
     }
 
-    public static Request.Builder init(Context context){
+    public static Request.Builder with(Context context) {
         mInstance = getInstance(context.getApplicationContext());
         return mInstance.getRequestBuilder();
     }

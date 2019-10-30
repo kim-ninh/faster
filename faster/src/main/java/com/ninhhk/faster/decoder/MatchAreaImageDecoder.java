@@ -30,6 +30,8 @@ public class MatchAreaImageDecoder extends ImageDecoder {
 
         Log.i(TAG, "Area limit: " + areaLimit);
         Log.i(TAG, "Target (w_h) : " + targetW + " " + targetH);
+        requestOption.setFinalWidth(targetW);
+        requestOption.setFinalHeight(targetH);
     }
 
     private int calculateSampleSize(int originWidth, int originHeight, int areaLimit) {

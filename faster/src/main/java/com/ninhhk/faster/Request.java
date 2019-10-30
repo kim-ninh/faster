@@ -101,7 +101,7 @@ public class Request {
 
         private void setDefaultScaleType(ImageView imageView) {
             ImageView.ScaleType scaleType = imageView.getScaleType();
-            setScaleType(scaleType);
+            transform(scaleType);
         }
 
         private boolean scaleTypeUnSet() {
@@ -144,7 +144,7 @@ public class Request {
             return this;
         }
 
-        public Builder setScaleType(ImageView.ScaleType scaleType){
+        public Builder transform(ImageView.ScaleType scaleType) {
             scaleTypeIsSet = true;
             Transformation transformation = TransformationFactory.get(scaleType);
             requestOption.setTransformation(transformation);

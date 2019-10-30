@@ -28,9 +28,9 @@ public abstract class MemoryStore {
 
     public abstract Bitmap load(Key key, Request request);
 
-    public abstract byte[] loadFromDisk(Key key, Request request);
+    protected abstract byte[] loadFromDisk(Key key, Request request);
 
-    protected abstract boolean existInRepo(Key key);
+    protected abstract boolean exists(Key key);
 
     public abstract void clear();
 }

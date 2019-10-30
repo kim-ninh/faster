@@ -11,8 +11,8 @@ public class BitmapStore {
     private DiskStore diskStore;
 
     public BitmapStore(Context context) {
-        this.diskStore = new MyDiskStore(this, context);   // need context for loading from Res, file
-        this.memoryStore = new MemStoreImp(this, context);  // need context for calculate for memory size
+        this.diskStore = new LruDiskStore(this, context);   // need context for loading from Res, file
+        this.memoryStore = new LruMemoryStore(this, context);  // need context for calculate for memory size
     }
 
     public Bitmap load(Key key, Request request) {
