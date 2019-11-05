@@ -71,6 +71,7 @@ public class Request {
 
         private void preLoadConfig() {
             requestOption = new RequestOption();
+            scaleTypeIsSet = false;
         }
 
         public Builder load(String url) {
@@ -87,22 +88,29 @@ public class Request {
 
         public void into(@NonNull ImageView imageView) {
             targetView = new WeakReference<>(imageView);
-            if (dimesionUnset()) {
-                setDefaultDimension();
-            }
 
-            if (scaleTypeUnSet()) {
-                setDefaultScaleType(imageView);
-            }
+            imageView.post(new Runnable() {
+                @Override
+                public void run() {
+                    ImageView imageView = targetView.get();
 
-            Request request = build();
-            imageView.setScaleType(ImageView.ScaleType.MATRIX);
-            imageLoader.handleRequest(request);
+                    if (dimensionUnset()) {
+                        setDefaultDimension();
+                    }
+
+                    if (scaleTypeUnSet()) {
+                        setDefaultScaleType(imageView);
+                    }
+                    Request request = build();
+                    imageLoader.handleRequest(request);
+                }
+            });
         }
 
         private void setDefaultScaleType(ImageView imageView) {
             ImageView.ScaleType scaleType = imageView.getScaleType();
             transform(scaleType);
+            requestOption.setScaleType(scaleType);
         }
 
         private boolean scaleTypeUnSet() {
@@ -114,11 +122,16 @@ public class Request {
             if (imageView != null){
                 int width = imageView.getWidth();
                 int height = imageView.getHeight();
-                resize(width, height);
+                if (width != height) {
+                    resize(width, height);
+                }
+                else {
+                    resize(width);
+                }
             }
         }
 
-        private boolean dimesionUnset() {
+        private boolean dimensionUnset() {
             return requestOption.getFinalHeight() == RequestOption.UNSET ||
             requestOption.getFinalWidth() == RequestOption.UNSET;
         }
@@ -149,6 +162,7 @@ public class Request {
             scaleTypeIsSet = true;
             Transformation transformation = TransformationFactory.get(scaleType);
             requestOption.setTransformation(transformation);
+            requestOption.setScaleType(scaleType);
             return this;
         }
 

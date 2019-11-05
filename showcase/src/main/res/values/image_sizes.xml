@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="image_sizes">
-        <item>2560 2560</item>
-        <item>1920 1080</item>
-        <item>1280 1280</item>
+        <item>@string/unselected_state</item>
         <item>600 400</item>
         <item>640 360</item>
         <item>600 600</item>
+        <item>300 300</item>
         <item>320 240</item>
         <item>100 100</item>
     </string-array>

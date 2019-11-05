@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="image_link">
+        <item>@string/unselected_state</item>
         <item>https://www.gstatic.com/webp/gallery/4.webp</item>
         <item>https://nokiatech.github.io/heif/content/images/old_bridge_1440x960.heic</item>
         <item>https://www.pexels.com/photo/417074/download/?search_query=high%2520resolution&amp;tracking_id=k4uuwlyp5jo</item>

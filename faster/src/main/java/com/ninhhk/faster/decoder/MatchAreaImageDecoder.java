@@ -31,13 +31,13 @@ public class MatchAreaImageDecoder extends ImageDecoder {
 
         opts.inSampleSize = sampleSize;
         opts.inDensity = Math.max(originWidth, originHeight);
-        opts.inTargetDensity = (Math.max(targetW, targetH) - 1) * opts.inSampleSize;
+        opts.inTargetDensity = (Math.max(targetW, targetH)) * opts.inSampleSize;
 
         Log.i(TAG, "Area limit: " + areaLimit);
         Log.i(TAG, "Target (w_h) : " + targetW + " " + targetH);
         decodedWidth = targetW;
         decodedHeight = targetH;
-        return new int[]{decodedWidth, decodedHeight};
+        return new int[]{decodedWidth + 1, decodedHeight + 1};
     }
 
     private int calculateSampleSize(int originWidth, int originHeight, int areaLimit) {

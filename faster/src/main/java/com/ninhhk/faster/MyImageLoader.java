@@ -52,11 +52,13 @@ public class MyImageLoader extends ImageLoader {
         private Request request;
         private WeakReference<ImageView> targetView;
         private Callback<Bitmap> requestListener;
+        private ImageView.ScaleType scaleType;
 
         public LoadImageTask(Request request) {
             this.request = request;
             targetView = request.getTargetView();
             requestListener = request.getListener();
+            scaleType = request.getRequestOption().getScaleType();
         }
 
         @Override
@@ -79,6 +81,7 @@ public class MyImageLoader extends ImageLoader {
 
                 ImageView imageView = targetView.get();
                 if (imageView != null) {
+//                    imageView.setScaleType(scaleType);
                     imageView.setImageBitmap(bitmap);
                 }
 

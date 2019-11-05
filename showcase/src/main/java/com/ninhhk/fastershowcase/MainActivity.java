@@ -2,12 +2,14 @@ package com.ninhhk.fastershowcase;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -25,6 +27,7 @@ public class MainActivity extends AppCompatActivity
     private static final String INTENT_IMAGE_TYPE = "image/*";
     private static final int REQUEST_CODE = 1234;
 
+    private FrameLayout imageViewHolder;
     private ImageView imageView;
 
     private TextView bitmapSize;
@@ -49,6 +52,11 @@ public class MainActivity extends AppCompatActivity
 
     private Request.Builder requestBuilder;
 
+
+    private Uri ImageUri;
+    private String urlString;
+    private ImageView.ScaleType scaleTypeEnum;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,7 +77,7 @@ public class MainActivity extends AppCompatActivity
         buttonLoad.setOnClickListener(this);
 
         requestBuilder = Faster.with(MainActivity.this);
-
+        disableLoadButton();
     }
 
     private void prepareData() {
@@ -94,7 +102,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setUpView() {
-        imageView = findViewById(R.id.imageView);
+        imageViewHolder = findViewById(R.id.imageViewHolder);
 
         bitmapSize = findViewById(R.id.bitmapSize);
 
@@ -142,24 +150,34 @@ public class MainActivity extends AppCompatActivity
                 textView.setVisibility(View.GONE);
             }
 
-        }else if (parent == spinnerLinks){
+        }else if (parent == spinnerLinks && !links[position].equals(getString(R.string.unselected_state))){
 
             if (spinnerLinks.getVisibility() == View.VISIBLE){
-                requestBuilder.load(links[position]);
-                triggerSelectCurrent();
+//                requestBuilder.load(links[position]);
+//                triggerSelectCurrent();
+                urlString = links[position];
             }
-        }else if (parent == spinnerImgSize){
+        }else if (parent == spinnerImgSize && !imageSizes[position].equals(getString(R.string.unselected_state))){
 
             int[] dimension = parseImageSize(imageSizes[position]);
-            if (dimension[0] == dimension[1]){
-                requestBuilder.resize(dimension[0]);
-            }else {
-                requestBuilder.resize(dimension[0], dimension[1]);
+//            if (dimension[0] == dimension[1]){
+//                requestBuilder.resize(dimension[0]);
+//            }else {
+//                requestBuilder.resize(dimension[0], dimension[1]);
+//            }
+
+            if (imageView != null){
+                imageViewHolder.removeView(imageView);
             }
 
-        }else if (parent == spinnerScale){
+            imageView = new ImageView(this);
+            imageViewHolder.addView(imageView, dimension[0], dimension[1]);
+            imageView.setBackgroundColor(Color.parseColor("#8F00BCD4"));
+            resetAll();
 
-            ImageView.ScaleType imgScaleType = ImageView.ScaleType.FIT_CENTER;
+        }else if (parent == spinnerScale && !scaleType[position].equals(getString(R.string.unselected_state))){
+
+            ImageView.ScaleType imgScaleType = null;
 
             if (scaleType[position].equals("Center crop")){
                 imgScaleType = ImageView.ScaleType.CENTER_CROP;
@@ -168,9 +186,21 @@ public class MainActivity extends AppCompatActivity
             }else if (scaleType[position].equals("Center")){
                 imgScaleType = ImageView.ScaleType.CENTER;
             }
-
-            requestBuilder.transform(imgScaleType);
+//            requestBuilder.transform(imgScaleType);
+            scaleTypeEnum = imgScaleType;
         }
+
+        if (isRequestReady()){
+            enableLoadButton();
+        }
+    }
+
+    private boolean isRequestReady() {
+        return (urlString != null || ImageUri != null) && (scaleTypeEnum != null);
+    }
+
+    private void enableLoadButton() {
+        buttonLoad.setEnabled(true);
     }
 
     private void selectImage() {
@@ -187,14 +217,25 @@ public class MainActivity extends AppCompatActivity
     public void onClick(View v) {
 
         if (v == buttonReset){
-            imageView.setImageDrawable(null);
+            resetAll();
         }else if (v == buttonClearCache){
             Faster faster = Faster.getInstance();
             if (faster != null){
                 faster.clearCache();
             }
         }else if (v == buttonLoad){
-            requestBuilder.setListener(new Callback<Bitmap>() {
+            if (urlString == null && ImageUri == null)
+                return;
+
+            if (urlString != null)
+                requestBuilder.load(urlString);
+
+            if (ImageUri != null)
+                requestBuilder.load(ImageUri);
+
+            requestBuilder
+                    .transform(scaleTypeEnum)
+                    .setListener(new Callback<Bitmap>() {
                 @Override
                 public void onReady(Bitmap data) {
                     int w = data.getWidth();
@@ -204,21 +245,44 @@ public class MainActivity extends AppCompatActivity
                     bitmapSize.setText(text);
                 }
             }).into(imageView);
+            resetRequestOption();
+            disableLoadButton();
 
-            int srcTypePos = spinnerSourceType.getSelectedItemPosition();
-            int linkPos = spinnerLinks.getSelectedItemPosition();
-            String txtUri = textView.getText().toString();
-
-
-            if (sourceType[srcTypePos].equals("Server")){
-                spinnerLinks.setSelection(linkPos);
-            }else {
-                requestBuilder.load(Uri.parse(txtUri));
-            }
-            triggerSelectCurrent();
         }else if (v == textView){
             selectImage();
         }
+    }
+
+    private void disableLoadButton() {
+        buttonLoad.setEnabled(false);
+    }
+
+    private void resetAll() {
+        imageView.setImageDrawable(null);
+        resetRequestOption();
+    }
+
+    private void resetRequestOption() {
+        urlString = null;
+        ImageUri = null;
+        scaleTypeEnum = null;
+        spinnerScale.setSelection(0);
+        spinnerLinks.setSelection(0);
+        textView.setText(R.string.unselected_state);
+    }
+
+    private void resetDefaultRequest() {
+        int srcTypePos = spinnerSourceType.getSelectedItemPosition();
+        int linkPos = spinnerLinks.getSelectedItemPosition();
+        String txtUri = textView.getText().toString();
+
+
+        if (sourceType[srcTypePos].equals("Server")){
+            spinnerLinks.setSelection(linkPos);
+        }else {
+            requestBuilder.load(Uri.parse(txtUri));
+        }
+        triggerSelectCurrent();
     }
 
     private void triggerSelectCurrent() {
@@ -236,7 +300,10 @@ public class MainActivity extends AppCompatActivity
         if (resultCode == RESULT_OK && data != null){
             Uri image = data.getData();
             textView.setText(image.toString());
-            requestBuilder.load(image);
+//            requestBuilder.load(image);
+//            triggerSelectCurrent();
+
+            ImageUri = image;
         }
     }
 }
