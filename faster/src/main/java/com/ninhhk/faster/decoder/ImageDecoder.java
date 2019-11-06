@@ -32,13 +32,7 @@ public abstract class ImageDecoder {
         result = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, opts);
 
         Log.i(TAG, "Bitmap after down sample size: " + result.getWidth() + " x " + result.getHeight());
-        result = applyTransformation(result);
         return result;
     }
 
-    private Bitmap applyTransformation(Bitmap source) {
-        Transformation transformation = requestOption.getTransformation();
-        // transform bitmap must have request dimension size (  Faster.with().resize(width, height) )
-        return transformation.transform(source, requestOption.getFinalWidth(), requestOption.getFinalHeight());
-    }
 }

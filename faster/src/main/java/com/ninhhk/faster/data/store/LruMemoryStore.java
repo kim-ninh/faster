@@ -11,6 +11,7 @@ import com.ninhhk.faster.Request;
 import com.ninhhk.faster.RequestOption;
 import com.ninhhk.faster.decoder.ImageDecoder;
 import com.ninhhk.faster.pool.FasterBitmapPool;
+import com.ninhhk.faster.transformer.Transformation;
 
 public class LruMemoryStore extends MemoryStore {
 
@@ -57,12 +58,19 @@ public class LruMemoryStore extends MemoryStore {
 
         if (exists(key)) {
             Log.i(TAG, "Bitmap with key " + key.toString() + "has read from mem");
-            return bm;
+        }else{
+            byte[] originBytes = loadFromDisk(key, request);
+            Bitmap bitmap = decodeBitmapAndSave(key, originBytes, request.getRequestOption(), request.getImageDecoder());
+            bm = bitmap;
         }
 
-        byte[] originBytes = loadFromDisk(key, request);
-        Bitmap bitmap = decodeBitmapAndSave(key, originBytes, request.getRequestOption(), request.getImageDecoder());
-        return bitmap;
+        bm = applyTransformation(bm, request.getRequestOption());
+        return bm;
+    }
+
+    private Bitmap applyTransformation(Bitmap bm, RequestOption requestOption) {
+        Transformation transformation = requestOption.getTransformation();
+        return transformation.transform(bm, requestOption.getFinalWidth(), requestOption.getFinalHeight());
     }
 
     private Bitmap decodeBitmapAndSave(Key key,
