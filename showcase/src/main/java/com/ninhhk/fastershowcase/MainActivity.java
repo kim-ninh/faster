@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity
     private FrameLayout imageViewHolder;
     private ImageView imageView;
 
-    private TextView bitmapSize;
+    private TextView textViewRequestInfo;
 
     private Spinner spinnerSourceType;
     private TextView textView;
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity
     private void setUpView() {
         imageViewHolder = findViewById(R.id.imageViewHolder);
 
-        bitmapSize = findViewById(R.id.bitmapSize);
+        textViewRequestInfo = findViewById(R.id.requestInfo);
 
         spinnerSourceType = findViewById(R.id.spinnerSrcType);
         textView = findViewById(R.id.textView);
@@ -224,27 +224,29 @@ public class MainActivity extends AppCompatActivity
                 faster.clearCache();
             }
         }else if (v == buttonLoad){
-            if (urlString == null && ImageUri == null)
+            String requestMade = "";
+
+            if (urlString == null && ImageUri == null) {
                 return;
+            }
 
-            if (urlString != null)
+            if (urlString != null) {
                 requestBuilder.load(urlString);
+                requestMade = urlString + "\n";
+            }
 
-            if (ImageUri != null)
+            if (ImageUri != null) {
                 requestBuilder.load(ImageUri);
+                requestMade = ImageUri + "\n";
+            }
+
+            requestMade += scaleTypeEnum.name();
 
             requestBuilder
                     .transform(scaleTypeEnum)
-                    .setListener(new Callback<Bitmap>() {
-                @Override
-                public void onReady(Bitmap data) {
-                    int w = data.getWidth();
-                    int h = data.getHeight();
+                    .into(imageView);
 
-                    String text = "Width: " + w + " Height: " + h;
-                    bitmapSize.setText(text);
-                }
-            }).into(imageView);
+            textViewRequestInfo.setText(requestMade);
             resetRequestOption();
             disableLoadButton();
 
