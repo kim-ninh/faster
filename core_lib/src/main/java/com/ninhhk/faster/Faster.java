@@ -10,8 +10,6 @@ public class Faster {
 
     private Faster(Context context) {
         imageLoader = new MyImageLoader(context);
-        mBuilder = new Request.Builder(imageLoader);
-
     }
 
     public static Request.Builder with(Context context) {
@@ -37,6 +35,7 @@ public class Faster {
     }
 
     public Request.Builder getRequestBuilder() {
+        mBuilder = new Request.Builder(imageLoader);
         return mBuilder;
     }
 
