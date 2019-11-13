@@ -3,9 +3,11 @@ package com.ninhhk.faster;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.DisplayMetrics;
 import android.widget.ImageView;
 
 import java.lang.ref.WeakReference;
@@ -15,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MyImageLoader extends ImageLoader {
     private static final String TAG = MyImageLoader.class.getSimpleName();
+    private static final int FADE_IN_TIME = 300;
     private static Handler mainThreadHandler = new Handler(Looper.getMainLooper());
     private ThreadPoolExecutor executor;
     private Resources resources;
@@ -53,12 +56,15 @@ public class MyImageLoader extends ImageLoader {
         private WeakReference<ImageView> targetView;
         private Callback<Bitmap> requestListener;
         private ImageView.ScaleType scaleType;
+        private final Drawable placeHolderDrawable;
+
 
         public LoadImageTask(Request request) {
             this.request = request;
             targetView = request.getTargetView();
             requestListener = request.getListener();
             scaleType = request.getRequestOption().getScaleType();
+            placeHolderDrawable = request.getRequestOption().getPlaceHolderDrawable();
         }
 
         @Override
@@ -75,14 +81,23 @@ public class MyImageLoader extends ImageLoader {
 
         @Override
         public void onReady(Bitmap bitmap) {
+            BitmapDrawable bitmapDrawable = new BitmapDrawable(resources, bitmap);
+
             mainThreadHandler.post(() -> {
-                DisplayMetrics displayMetrics = resources.getDisplayMetrics();
-                bitmap.setDensity(displayMetrics.densityDpi);
 
                 ImageView imageView = targetView.get();
                 if (imageView != null) {
 //                    imageView.setScaleType(scaleType);
-                    imageView.setImageBitmap(bitmap);
+                    if (placeHoldIsSet()) {
+                        TransitionDrawable td = new TransitionDrawable(new Drawable[]{
+                                placeHolderDrawable,
+                                bitmapDrawable
+                        });
+                        imageView.setImageDrawable(td);
+                        td.startTransition(FADE_IN_TIME);
+                    } else {
+                        imageView.setImageDrawable(bitmapDrawable);
+                    }
                 }
 
                 if (requestListener != null) {
@@ -90,6 +105,10 @@ public class MyImageLoader extends ImageLoader {
                 }
 
             });
+        }
+
+        private boolean placeHoldIsSet() {
+            return placeHolderDrawable != null;
         }
     }
 }

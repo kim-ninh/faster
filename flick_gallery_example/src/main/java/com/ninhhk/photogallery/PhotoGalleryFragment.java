@@ -1,11 +1,10 @@
 package com.ninhhk.photogallery;
 
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +29,6 @@ public class PhotoGalleryFragment extends Fragment {
 
     private RecyclerView mPhotoRecyclerView;
     private List<GalleryItem> mItems = new ArrayList<>();
-    private ThumbnailDownloader<PhotoHolder> mThumbnailDownloader;
 
 
     public static PhotoGalleryFragment newInstance() {
@@ -42,27 +40,12 @@ public class PhotoGalleryFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         new FetchItemsTask().execute();
-        Handler responseHandler = new Handler();
-        mThumbnailDownloader = new ThumbnailDownloader<>(responseHandler);
-        mThumbnailDownloader.setThumbnailDownloadListener(
-                new ThumbnailDownloader.ThumbnailDownloadListener<PhotoHolder>() {
-                    @Override
-                    public void onThumbnailDownloaded(PhotoHolder target, Bitmap thumbnail) {
-                        Drawable drawable = new BitmapDrawable(getResources(), thumbnail);
-                        target.bindDrawable(drawable);
-                    }
-                });
-
-
-        mThumbnailDownloader.start();
-        mThumbnailDownloader.getLooper();
         Log.i(TAG, "Background thread started");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mThumbnailDownloader.quit();
         Log.i(TAG, "Background thread destroyed");
     }
 
@@ -95,7 +78,6 @@ public class PhotoGalleryFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mThumbnailDownloader.clearQueue();
     }
 
     private void setupAdapter() {
@@ -155,11 +137,12 @@ public class PhotoGalleryFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull PhotoHolder holder, int position) {
             GalleryItem galleryItem = mGalleryItems.get(position);
-            Drawable placeholder = getResources().getDrawable(R.drawable.my_image);
-            holder.bindDrawable(placeholder);
+//            Drawable placeholder = getResources().getDrawable(R.drawable.my_image);
+//            holder.bindDrawable(placeholder);
 //            mThumbnailDownloader.queueThumbnail(holder, galleryItem.getUrl());
             Faster.with(PhotoGalleryFragment.this.getActivity())
                     .load(galleryItem.getUrl())
+                    .placeholder(new ColorDrawable(Color.TRANSPARENT))
                     .into(holder.mItemImageView);
         }
 

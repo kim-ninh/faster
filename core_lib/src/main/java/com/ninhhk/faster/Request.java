@@ -1,6 +1,7 @@
 package com.ninhhk.faster;
 
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.widget.ImageView;
 
@@ -101,10 +102,18 @@ public class Request {
                     if (scaleTypeUnSet()) {
                         setDefaultScaleType(imageView);
                     }
+
+                    if (placeHoladerIsSet()) {
+                        imageView.setImageDrawable(requestOption.getPlaceHolderDrawable());
+                    }
                     Request request = build();
                     imageLoader.handleRequest(request);
                 }
             });
+        }
+
+        private boolean placeHoladerIsSet() {
+            return requestOption.getPlaceHolderDrawable() != null;
         }
 
         private void setDefaultScaleType(ImageView imageView) {
@@ -163,6 +172,11 @@ public class Request {
             Transformation transformation = TransformationFactory.get(scaleType);
             requestOption.setTransformation(transformation);
             requestOption.setScaleType(scaleType);
+            return this;
+        }
+
+        public Builder placeholder(Drawable placeHolderDrawable) {
+            requestOption.setPlaceHolder(placeHolderDrawable);
             return this;
         }
 

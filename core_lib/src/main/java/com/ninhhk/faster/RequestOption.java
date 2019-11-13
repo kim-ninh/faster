@@ -1,5 +1,6 @@
 package com.ninhhk.faster;
 
+import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 
 import com.ninhhk.faster.transformer.DefaultTransformation;
@@ -13,6 +14,7 @@ public class RequestOption {
     private int finalHeight = UNSET;
     private Transformation transformation = new DefaultTransformation();
     private ImageView.ScaleType scaleType;
+    private Drawable placeHolderDrawable = null;
 
     public void setFinalWidth(int finalWidth) {
         this.finalWidth = finalWidth;
@@ -46,6 +48,10 @@ public class RequestOption {
         this.scaleType = scaleType;
     }
 
+    public void setPlaceHolder(Drawable placeHolderDrawable) {
+        this.placeHolderDrawable = placeHolderDrawable;
+    }
+
     @Override
     public String toString() {
         return "RequestOption{" +
@@ -53,5 +59,9 @@ public class RequestOption {
                 ", finalHeight=" + finalHeight +
                 ", transformation=" + transformation +
                 '}';
+    }
+
+    public Drawable getPlaceHolderDrawable() {
+        return placeHolderDrawable;
     }
 }
