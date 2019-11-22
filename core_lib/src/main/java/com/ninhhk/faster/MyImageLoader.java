@@ -11,21 +11,25 @@ import android.os.Looper;
 import android.widget.ImageView;
 
 import java.lang.ref.WeakReference;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class MyImageLoader extends ImageLoader {
+    public static final int TOTAL_THREAD_AVAILABLE = 6;
     private static final String TAG = MyImageLoader.class.getSimpleName();
     private static final int FADE_IN_TIME = 300;
     private static Handler mainThreadHandler = new Handler(Looper.getMainLooper());
     private ThreadPoolExecutor executor;
     private Resources resources;
+    private ConcurrentHashMap<ImageView, Future<?>> targetImageViewMap = new ConcurrentHashMap<>();
 
     public MyImageLoader(Context context) {
         super(context);
-        executor = new ThreadPoolExecutor(1, 1, 0L,
-                TimeUnit.MICROSECONDS,
+        executor = new ThreadPoolExecutor(TOTAL_THREAD_AVAILABLE, TOTAL_THREAD_AVAILABLE, 60L,
+                TimeUnit.SECONDS,
                 new LinkedBlockingQueue<>());
 
         resources = context.getResources();
@@ -43,12 +47,28 @@ public class MyImageLoader extends ImageLoader {
 
     public void postRequest(Request request) {
 
+        ImageView targetView = request.getTargetView().get();
+        if (targetView != null) {
+            Future<?> oldTask = targetImageViewMap.get(targetView);
+            if (oldTask != null) {
+                oldTask.cancel(true);
+            }
+        }
+
         LoadImageTask loadImageTask = buildTask(request);
-        executor.submit(loadImageTask);
+        Future<?> currentTask = executor.submit(loadImageTask);
+
+        if (targetView != null) {
+            targetImageViewMap.put(targetView, currentTask);
+        }
     }
 
     private LoadImageTask buildTask(Request request) {
         return new LoadImageTask(request);
+    }
+
+    private void removeTaskFromMap(ImageView imageView) {
+        targetImageViewMap.remove(imageView);
     }
 
     private class LoadImageTask implements Runnable, Callback<Bitmap> {
@@ -82,13 +102,13 @@ public class MyImageLoader extends ImageLoader {
         @Override
         public void onReady(Bitmap bitmap) {
             BitmapDrawable bitmapDrawable = new BitmapDrawable(resources, bitmap);
-
             mainThreadHandler.post(() -> {
 
                 ImageView imageView = targetView.get();
                 if (imageView != null) {
 //                    imageView.setScaleType(scaleType);
-                    if (placeHoldIsSet()) {
+
+                    if (placeHoldIsSet() && !request.isLoadForMem) {
                         TransitionDrawable td = new TransitionDrawable(new Drawable[]{
                                 placeHolderDrawable,
                                 bitmapDrawable
@@ -98,6 +118,7 @@ public class MyImageLoader extends ImageLoader {
                     } else {
                         imageView.setImageDrawable(bitmapDrawable);
                     }
+                    removeTaskFromMap(imageView);
                 }
 
                 if (requestListener != null) {

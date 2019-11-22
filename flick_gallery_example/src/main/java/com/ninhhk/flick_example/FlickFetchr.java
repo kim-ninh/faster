@@ -1,4 +1,4 @@
-package com.ninhhk.photogallery;
+package com.ninhhk.flick_example;
 
 import android.net.Uri;
 import android.util.Log;

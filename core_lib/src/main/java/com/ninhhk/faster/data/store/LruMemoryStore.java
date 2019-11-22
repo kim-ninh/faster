@@ -7,11 +7,16 @@ import android.util.Log;
 import android.util.LruCache;
 
 import com.ninhhk.faster.Key;
+import com.ninhhk.faster.LogUtils;
 import com.ninhhk.faster.Request;
 import com.ninhhk.faster.RequestOption;
+import com.ninhhk.faster.StringUtils;
 import com.ninhhk.faster.decoder.ImageDecoder;
 import com.ninhhk.faster.pool.FasterBitmapPool;
 import com.ninhhk.faster.transformer.Transformation;
+import com.ninhhk.faster.utils.MemoryUtils;
+
+import java.io.InputStream;
 
 public class LruMemoryStore extends MemoryStore {
 
@@ -36,6 +41,11 @@ public class LruMemoryStore extends MemoryStore {
                     pool.put(oldValue);
                 }
             }
+
+            @Override
+            protected int sizeOf(Key key, Bitmap value) {
+                return value.getByteCount();
+            }
         };
 
     }
@@ -59,11 +69,31 @@ public class LruMemoryStore extends MemoryStore {
         Bitmap bm = memCache.get(key);
 
         if (exists(key)) {
+            request.isLoadForMem = true;
             Log.i(TAG, "Bitmap with key " + key.toString() + "has read from mem");
         }else{
+
+            // use byte[] to load & decode image
             byte[] originBytes = loadFromDisk(key, request);
             Bitmap bitmap = decodeBitmapAndSave(key, originBytes, request.getRequestOption(), request.getImageDecoder());
             bm = bitmap;
+
+            ByteBufferPool.getInstance(MemoryUtils.BUFFER_CAPACITY)
+                    .put(originBytes);
+
+            //use InputStream to load & decode image, not stable for UrlStringResource
+
+//            InputStream bufferedInputStream;
+//            Bitmap bitmap;
+//            try {
+//                bufferedInputStream = getStreamFromFile(key, request);
+//                bitmap = decodeBitmapAndSave(key, bufferedInputStream, request.getRequestOption(), request.getImageDecoder());
+//                bm = bitmap;
+//                bufferedInputStream.close();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+
         }
 
         bm = applyTransformation(bm, request.getRequestOption());
@@ -84,15 +114,35 @@ public class LruMemoryStore extends MemoryStore {
         return bitmap;
     }
 
+    private Bitmap decodeBitmapAndSave(Key key,
+                                       InputStream is,
+                                       RequestOption requestOption,
+                                       ImageDecoder decoder) {
+        Bitmap bitmap = decodeFromStream(is, decoder, requestOption);
+        saveToMemCache(key, bitmap);
+        return bitmap;
+    }
+
+    private Bitmap decodeFromStream(InputStream is, ImageDecoder decoder, RequestOption requestOption) {
+        Bitmap bitmap;
+        bitmap = decoder.decode(is, requestOption);
+        return bitmap;
+    }
+
     @Override
     protected byte[] loadFromDisk(Key key, Request request) {
 
         return diskStore.load(key, request);
     }
 
+    @Override
+    protected InputStream getStreamFromFile(Key key, Request request) {
+        return diskStore.getInputStream(key, request);
+    }
+
     private void saveToMemCache(Key key, Bitmap bitmap) {
         this.memCache.put(key, bitmap);
-        Log.i(TAG, "Bitmap with key " + key.toString() + " has been cached!" );
+        LogUtils.i(TAG, StringUtils.concat("Bitmap with key ", key.toString(), " has been cached!"));
     }
 
     private Bitmap decodeFromBytes(byte[] bytes,

@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.loader.content.AsyncTaskLoader;
 
 import java.util.ArrayList;
@@ -83,7 +82,7 @@ public class MediaStoreDataLoader extends AsyncTaskLoader<List<MediaStoreData>> 
     @Override
     public List<MediaStoreData> loadInBackground() {
         List<MediaStoreData> data = queryImages();
-        data.addAll(queryVideos());
+//        data.addAll(queryVideos());
         Collections.sort(
                 data,
                 new Comparator<MediaStoreData>() {

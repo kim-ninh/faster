@@ -1,6 +1,5 @@
-package com.ninhhk.photogallery;
+package com.ninhhk.flick_example;
 
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -21,9 +20,11 @@ import com.ninhhk.faster.Faster;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class PhotoGalleryFragment extends Fragment {
 
+    private static final Random sRandom = new Random();
 
     public static final String TAG = PhotoGalleryFragment.class.getSimpleName();
 
@@ -56,20 +57,6 @@ public class PhotoGalleryFragment extends Fragment {
 
         mPhotoRecyclerView = (RecyclerView) v.findViewById(R.id.photo_recycler_view);
         mPhotoRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-//        mPhotoRecyclerView.addOnScrollListener(new OnScrollListener() {
-//            @Override
-//            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-//                super.onScrollStateChanged(recyclerView, newState);
-//                Log.i(TAG, "onScrollStateChanged: " + newState);
-//
-//            }
-//
-//            @Override
-//            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-//                super.onScrolled(recyclerView, dx, dy);
-//                Log.i(TAG, "onScrolled: dx = " + dx + ", dy = " + dy);
-//            }
-//        });
         setupAdapter();
 
         return v;
@@ -137,12 +124,10 @@ public class PhotoGalleryFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull PhotoHolder holder, int position) {
             GalleryItem galleryItem = mGalleryItems.get(position);
-//            Drawable placeholder = getResources().getDrawable(R.drawable.my_image);
-//            holder.bindDrawable(placeholder);
-//            mThumbnailDownloader.queueThumbnail(holder, galleryItem.getUrl());
+
             Faster.with(PhotoGalleryFragment.this.getActivity())
                     .load(galleryItem.getUrl())
-                    .placeholder(new ColorDrawable(Color.TRANSPARENT))
+                    .placeholder(new ColorDrawable(sRandom.nextInt()))
                     .into(holder.mItemImageView);
         }
 

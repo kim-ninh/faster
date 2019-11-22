@@ -1,4 +1,4 @@
-package com.ninhhk.fastershowcase;
+package com.ninhhk.singlerequestexample;
 
 import org.junit.Test;
 

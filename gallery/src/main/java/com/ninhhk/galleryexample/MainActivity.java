@@ -1,5 +1,21 @@
 package com.ninhhk.galleryexample;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,26 +26,11 @@ import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.ninhhk.faster.Faster;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.Inflater;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<List<MediaStoreData>> {
@@ -37,6 +38,8 @@ public class MainActivity extends AppCompatActivity
     private static final int REQUEST_READ_STORAGE = 0;
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    public static final Random sRandom = new Random();
+    public static final ColorDrawable PLACE_HOLDER_DRAWABLE = new ColorDrawable(Color.TRANSPARENT);
     private List<MediaStoreData> photoItems = new ArrayList<>();
     private RecyclerView recyclerView;
 
@@ -56,6 +59,24 @@ public class MainActivity extends AppCompatActivity
         }else{
             LoaderManager.getInstance(this).initLoader(0, null, this);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.clear_cache) {
+            Faster faster = Faster.getInstance();
+            if (faster != null) {
+                faster.clearCache();
+            }
+        }
+        return true;
     }
 
     private void requestStoragePermission() {
@@ -90,7 +111,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onLoadFinished(@NonNull Loader<List<MediaStoreData>> loader, List<MediaStoreData> data) {
-        Log.i(TAG, "onLoadFinished: " + data);
         recyclerView.setAdapter(new PhotoAdapter(data));
     }
 
@@ -110,7 +130,7 @@ public class MainActivity extends AppCompatActivity
         @NonNull
         @Override
         public PhotoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            LayoutInflater inflater = getLayoutInflater();
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             View v = inflater.inflate(R.layout.list_item_gallery, parent, false);
             return new PhotoViewHolder(v);
         }
@@ -119,7 +139,7 @@ public class MainActivity extends AppCompatActivity
         public void onBindViewHolder(@NonNull PhotoViewHolder holder, int position) {
             Faster.with(MainActivity.this)
                     .load(mediaStoreData.get(position).uri)
-                    .placeholder(new ColorDrawable(Color.TRANSPARENT))
+                    .placeholder(new ColorDrawable(sRandom.nextInt()))
                     .into(holder.imageView);
         }
 

@@ -33,6 +33,11 @@ public class DrawableResource extends DataSource<Integer> {
     }
 
     @Override
+    public InputStream getInputStream(Context context) {
+        return null;
+    }
+
+    @Override
     public String name() {
         return "resId_" + model;
     }

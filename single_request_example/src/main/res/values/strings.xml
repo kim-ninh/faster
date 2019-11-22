@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">FasterShowcase</string>
+    <string name="app_name">Single Request Demo</string>
     <string name="unselected_state">Unselected</string>
 </resources>

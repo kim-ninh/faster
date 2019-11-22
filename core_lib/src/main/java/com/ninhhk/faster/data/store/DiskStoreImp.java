@@ -4,8 +4,10 @@ import android.content.Context;
 import android.util.Log;
 
 import com.ninhhk.faster.Key;
+import com.ninhhk.faster.LogUtils;
 import com.ninhhk.faster.Request;
 import com.ninhhk.faster.RequestManager;
+import com.ninhhk.faster.StringUtils;
 import com.ninhhk.faster.data.source.DataSource;
 
 import java.io.ByteArrayOutputStream;
@@ -52,11 +54,21 @@ public class DiskStoreImp extends DiskStore {
         return bytes;
     }
 
+    @Override
+    public InputStream getInputStream(Key key, Request request) {
+        return null;
+    }
+
     // invoke callback.onReady(bytes) when the load is done
     @Override
     protected byte[] loadFromDataSource(Key key, DataSource<?> dataSource) {
 
         return dataSource.load(context);
+    }
+
+    @Override
+    protected InputStream getInputStreamFromDataSource(Key key, DataSource<?> dataSource) {
+        return null;
     }
 
     @Override
@@ -109,7 +121,7 @@ public class DiskStoreImp extends DiskStore {
             bytes = readFromStream(fileInputStream);
             fileInputStream.close();
 
-            Log.i(TAG, "File " + file.getAbsolutePath() + " read!");
+            LogUtils.i(TAG, StringUtils.concat("File ", file.getAbsolutePath(), " read!"));
         } catch (IOException e) {
             e.printStackTrace();
         }

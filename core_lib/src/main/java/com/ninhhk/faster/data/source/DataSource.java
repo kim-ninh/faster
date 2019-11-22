@@ -4,6 +4,8 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
+import java.io.InputStream;
+
 public abstract class DataSource<T> {
     protected T model;
 
@@ -12,6 +14,8 @@ public abstract class DataSource<T> {
     }
 
     abstract public byte[] load(Context context);
+
+    abstract public InputStream getInputStream(Context context);
 
     abstract public String name();
 

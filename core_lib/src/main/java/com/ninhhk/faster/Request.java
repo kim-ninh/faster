@@ -27,6 +27,7 @@ public class Request {
     private RequestOption requestOption;
     private WeakReference<ImageView> targetView;
     private ImageDecoder imageDecoder;
+    public boolean isLoadForMem = false;
 
     public Request(Builder builder) {
         this.dataSource = builder.dataSource;

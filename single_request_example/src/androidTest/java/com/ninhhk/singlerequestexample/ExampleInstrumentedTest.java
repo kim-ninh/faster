@@ -1,4 +1,4 @@
-package com.ninhhk.photogallery;
+package com.ninhhk.singlerequestexample;
 
 import android.content.Context;
 
@@ -22,6 +22,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        assertEquals("com.ninhhk.photogallery", appContext.getPackageName());
+        assertEquals("com.ninhhk.fastershowcase", appContext.getPackageName());
     }
 }

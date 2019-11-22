@@ -6,6 +6,8 @@ import android.graphics.Bitmap;
 import com.ninhhk.faster.Key;
 import com.ninhhk.faster.Request;
 
+import java.io.InputStream;
+
 public abstract class MemoryStore {
 
     protected DiskStore diskStore;
@@ -29,6 +31,8 @@ public abstract class MemoryStore {
     public abstract Bitmap load(Key key, Request request);
 
     protected abstract byte[] loadFromDisk(Key key, Request request);
+
+    protected abstract InputStream getStreamFromFile(Key key, Request request);
 
     protected abstract boolean exists(Key key);
 
