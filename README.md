@@ -8,7 +8,24 @@
 
 ## Install
 
+Add these line in your build.gradle at the end of repository
+```gradle
+allprojects {
+  repositories {
+    ...
+    maven { url 'https://jitpack.io' }
+  }  
+}
+```
 
+Add the dependency
+```gradle
+dependencies{
+  implementation 'com.github.kim-ninh:faster:v1.0'
+}
+```
+
+v1.0
 ## Usage
 
 ### Common use
