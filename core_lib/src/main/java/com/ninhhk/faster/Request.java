@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 
 import com.ninhhk.faster.data.source.DataSource;
 import com.ninhhk.faster.data.source.DrawableResource;
+import com.ninhhk.faster.data.source.FileSource;
 import com.ninhhk.faster.data.source.UriSourceFactory;
 import com.ninhhk.faster.data.source.UrlStringSource;
 import com.ninhhk.faster.decoder.ImageDecoder;
@@ -18,6 +19,7 @@ import com.ninhhk.faster.decoder.MaxOneSideImageDecoder;
 import com.ninhhk.faster.transformer.Transformation;
 import com.ninhhk.faster.transformer.TransformationFactory;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 
 public class Request {
@@ -184,6 +186,12 @@ public class Request {
         public Builder load(Uri uri) {
             preLoadConfig();
             dataSource = UriSourceFactory.get(uri);
+            return this;
+        }
+
+        public Builder load(File file) {
+            preLoadConfig();
+            dataSource = new FileSource(file);
             return this;
         }
     }
