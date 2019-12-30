@@ -1,2 +1,2 @@
-include ':app', ':core_lib', ':single_request_example', ':flick_gallery_example', ':picasa_web', ':gallery'
+include ':core_lib', ':single_request_example', ':flick_gallery_example', ':picasa_web', ':gallery'
 rootProject.name='faster'
