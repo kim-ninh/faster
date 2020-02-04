@@ -5,6 +5,9 @@ import android.content.res.Resources;
 
 import androidx.annotation.DrawableRes;
 
+import com.ninhhk.faster.Request;
+import com.ninhhk.faster.utils.ExifUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,13 +22,19 @@ public class DrawableResource extends DataSource<Integer> {
     }
 
     @Override
-    public byte[] load(Context context) {
+    public byte[] load(Context context, Request request) {
         byte[] bytes = new byte[0];
         Resources resources = context.getResources();
         InputStream is;
         try {
             is = resources.openRawResource(model);
+            request.exifOrientation = ExifUtils.getImageRotation(is);
+            is.close();
+
+            is = resources.openRawResource(model);
             bytes = readFromStream(is);
+            is.close();
+
         } catch (IOException e) {
             e.printStackTrace();
         }

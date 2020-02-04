@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 import android.util.LruCache;
+import android.util.SparseIntArray;
 
 import com.ninhhk.faster.Key;
 import com.ninhhk.faster.LogUtils;
@@ -26,6 +27,8 @@ public class LruMemoryStore extends MemoryStore {
 
     private LruCache<Key, Bitmap> memCache;
     private FasterBitmapPool pool = FasterBitmapPool.getInstance();
+    private SparseIntArray bitmapOrientaions = new SparseIntArray();
+
 
     public LruMemoryStore(BitmapStore bitmapStore, Context context) {
         super(bitmapStore);
@@ -70,6 +73,11 @@ public class LruMemoryStore extends MemoryStore {
 
         if (exists(key)) {
             request.isLoadForMem = true;
+
+            synchronized (this) {
+                request.exifOrientation = bitmapOrientaions.get(key.hashCode(), 0);
+            }
+
             Log.i(TAG, "Bitmap with key " + key.toString() + "has read from mem");
         }else{
 
@@ -80,6 +88,10 @@ public class LruMemoryStore extends MemoryStore {
 
             ByteBufferPool.getInstance(MemoryUtils.BUFFER_CAPACITY)
                     .put(originBytes);
+
+            synchronized (this) {
+                bitmapOrientaions.put(key.hashCode(), request.exifOrientation);
+            }
 
             //use InputStream to load & decode image, not stable for UrlStringResource
 
@@ -95,7 +107,6 @@ public class LruMemoryStore extends MemoryStore {
 //            }
 
         }
-
         bm = applyTransformation(bm, request.getRequestOption());
         return bm;
     }

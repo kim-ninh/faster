@@ -50,7 +50,7 @@ public class DiskStoreImp extends DiskStore {
             return bytes;
         }
 
-        bytes = loadFromDataSource(key, request.getDataSource());
+        bytes = loadFromDataSource(key, request.getDataSource(), request);
         return bytes;
     }
 
@@ -61,9 +61,9 @@ public class DiskStoreImp extends DiskStore {
 
     // invoke callback.onReady(bytes) when the load is done
     @Override
-    protected byte[] loadFromDataSource(Key key, DataSource<?> dataSource) {
+    protected byte[] loadFromDataSource(Key key, DataSource<?> dataSource, Request request) {
 
-        return dataSource.load(context);
+        return dataSource.load(context, request);
     }
 
     @Override

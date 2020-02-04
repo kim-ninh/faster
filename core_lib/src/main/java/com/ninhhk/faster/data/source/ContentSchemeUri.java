@@ -4,7 +4,9 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 
+import com.ninhhk.faster.Request;
 import com.ninhhk.faster.data.store.ByteBufferPool;
+import com.ninhhk.faster.utils.ExifUtils;
 import com.ninhhk.faster.utils.MemoryUtils;
 
 import java.io.FileNotFoundException;
@@ -31,13 +33,22 @@ public class ContentSchemeUri extends UriSource {
     }
 
     @Override
-    public byte[] load(Context context) {
+    public byte[] load(Context context, Request request) {
         byte[] bytes = null;
         ContentResolver contentResolver = context.getContentResolver();
         InputStream is;
         try {
             is = contentResolver.openInputStream(model);
+            if (is == null)
+                return new byte[0];
+            request.exifOrientation = ExifUtils.getImageRotation(is);
+            is.close();
+
+            is = contentResolver.openInputStream(model);
+            if (is == null)
+                return new byte[0];
             bytes = readFromStream(is);
+            is.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

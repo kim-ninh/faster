@@ -2,7 +2,9 @@ package com.ninhhk.faster.data.source;
 
 import android.content.Context;
 
+import com.ninhhk.faster.Request;
 import com.ninhhk.faster.data.store.ByteBufferPool;
+import com.ninhhk.faster.utils.ExifUtils;
 import com.ninhhk.faster.utils.MemoryUtils;
 
 import java.io.File;
@@ -15,12 +17,14 @@ import java.nio.ByteBuffer;
 public class FileSource extends DataSource<File> {
     public FileSource(File model) {
         super(model);
+        exifOrientation = ExifUtils.getImageRotation(model);
     }
 
     @Override
-    public byte[] load(Context context) {
+    public byte[] load(Context context, Request request) {
         try {
 
+            request.exifOrientation = exifOrientation;
             FileInputStream fileInputStream = new FileInputStream(model);
             return readFromStream(fileInputStream);
 

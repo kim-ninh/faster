@@ -3,6 +3,7 @@ package com.ninhhk.faster;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
@@ -106,7 +107,11 @@ public class MyImageLoader extends ImageLoader {
 
                 ImageView imageView = targetView.get();
                 if (imageView != null) {
-//                    imageView.setScaleType(scaleType);
+
+                    imageView.setScaleType(ImageView.ScaleType.MATRIX);
+                    Matrix matrix = new Matrix();
+                    matrix.postRotate(request.exifOrientation, imageView.getWidth() / 2, imageView.getHeight() / 2);
+                    imageView.setImageMatrix(matrix);
 
                     if (placeHoldIsSet() && !request.isLoadForMem) {
                         TransitionDrawable td = new TransitionDrawable(new Drawable[]{

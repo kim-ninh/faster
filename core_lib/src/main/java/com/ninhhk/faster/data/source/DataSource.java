@@ -4,16 +4,20 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
+import com.ninhhk.faster.Request;
+
 import java.io.InputStream;
 
 public abstract class DataSource<T> {
     protected T model;
 
+    protected int exifOrientation = 0;
+
     public DataSource(T model) {
         this.model = model;
     }
 
-    abstract public byte[] load(Context context);
+    abstract public byte[] load(Context context, Request request);
 
     abstract public InputStream getInputStream(Context context);
 

@@ -24,7 +24,7 @@ public abstract class DiskStore {
 
     public abstract InputStream getInputStream(Key key, Request request);
 
-    protected abstract byte[] loadFromDataSource(Key key, DataSource<?> dataSource);
+    protected abstract byte[] loadFromDataSource(Key key, DataSource<?> dataSource, Request request);
 
     protected abstract InputStream getInputStreamFromDataSource(Key key, DataSource<?> dataSource);
 

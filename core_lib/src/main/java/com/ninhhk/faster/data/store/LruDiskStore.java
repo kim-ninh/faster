@@ -8,6 +8,7 @@ import com.ninhhk.faster.LogUtils;
 import com.ninhhk.faster.Request;
 import com.ninhhk.faster.StringUtils;
 import com.ninhhk.faster.data.source.DataSource;
+import com.ninhhk.faster.utils.ExifUtils;
 import com.ninhhk.faster.utils.MemoryUtils;
 
 import java.io.BufferedInputStream;
@@ -69,12 +70,12 @@ public class LruDiskStore extends DiskStore {
         openIfClose();
 
         if (exists(key)) {
-            bytes = openFileWithKey(key);
+            bytes = openFileWithKey(key, request);
 
             return bytes;
         }
 
-        bytes = loadFromDataSource(key, request.getDataSource());
+        bytes = loadFromDataSource(key, request.getDataSource(), request);
         return bytes;
     }
 
@@ -122,7 +123,7 @@ public class LruDiskStore extends DiskStore {
         return is;
     }
 
-    private byte[] openFileWithKey(Key key) {
+    private byte[] openFileWithKey(Key key, Request request) {
         byte[] bytes = null;
         String fileName = getFileName(key);
         InputStream is;
@@ -130,6 +131,11 @@ public class LruDiskStore extends DiskStore {
 
         try {
             snapshot = diskLruCache.get(fileName);
+
+            is = snapshot.getInputStream(0);
+            request.exifOrientation = ExifUtils.getImageRotation(is);
+            is.close();
+
             is = snapshot.getInputStream(0);
             bytes = readFromStream(is);
             is.close();
@@ -167,10 +173,10 @@ public class LruDiskStore extends DiskStore {
     }
 
     @Override
-    protected byte[] loadFromDataSource(Key key, DataSource<?> dataSource) {
+    protected byte[] loadFromDataSource(Key key, DataSource<?> dataSource, Request request) {
         byte[] dataSourceBytes;
 
-        dataSourceBytes = dataSource.load(context);
+        dataSourceBytes = dataSource.load(context, request);
         saveToDisk(key, dataSourceBytes);
         return dataSourceBytes;
     }

@@ -30,6 +30,7 @@ public class Request {
     private WeakReference<ImageView> targetView;
     private ImageDecoder imageDecoder;
     public boolean isLoadForMem = false;
+    public int exifOrientation = 0;
 
     public Request(Builder builder) {
         this.dataSource = builder.dataSource;

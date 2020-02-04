@@ -2,6 +2,7 @@ package com.ninhhk.faster.data.source;
 
 import android.content.Context;
 
+import com.ninhhk.faster.Request;
 import com.ninhhk.faster.data.store.ByteBufferPool;
 import com.ninhhk.faster.utils.MemoryUtils;
 
@@ -29,7 +30,7 @@ public class UrlStringSource extends DataSource<String> {
     }
 
     @Override
-    public byte[] load(Context context) {
+    public byte[] load(Context context, Request request) {
         byte[] bytes = new byte[0];
         HttpURLConnection connection;
         InputStream is;
