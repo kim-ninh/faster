@@ -7,6 +7,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import androidx.exifinterface.media.ExifInterface;
 
 import com.ninhhk.faster.data.source.DataSource;
 import com.ninhhk.faster.data.source.DrawableResource;
@@ -30,7 +31,7 @@ public class Request {
     private WeakReference<ImageView> targetView;
     private ImageDecoder imageDecoder;
     public boolean isLoadForMem = false;
-    public int exifOrientation = 0;
+    public int orientationTag = ExifInterface.ORIENTATION_UNDEFINED;
 
     public Request(Builder builder) {
         this.dataSource = builder.dataSource;
@@ -145,8 +146,7 @@ public class Request {
         }
 
         private boolean dimensionUnset() {
-            return requestOption.getFinalHeight() == RequestOption.UNSET ||
-            requestOption.getFinalWidth() == RequestOption.UNSET;
+            return requestOption.isSizeUnset();
         }
 
         private Request build(){

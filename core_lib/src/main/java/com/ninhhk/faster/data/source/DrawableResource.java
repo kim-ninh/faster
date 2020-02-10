@@ -28,7 +28,7 @@ public class DrawableResource extends DataSource<Integer> {
         InputStream is;
         try {
             is = resources.openRawResource(model);
-            request.exifOrientation = ExifUtils.getImageRotation(is);
+            request.orientationTag = ExifUtils.getOrientationTag(is);
             is.close();
 
             is = resources.openRawResource(model);

@@ -3,9 +3,12 @@ package com.ninhhk.faster.data.store;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.util.Log;
 import android.util.LruCache;
 import android.util.SparseIntArray;
+
+import androidx.exifinterface.media.ExifInterface;
 
 import com.ninhhk.faster.Key;
 import com.ninhhk.faster.LogUtils;
@@ -15,6 +18,7 @@ import com.ninhhk.faster.StringUtils;
 import com.ninhhk.faster.decoder.ImageDecoder;
 import com.ninhhk.faster.pool.FasterBitmapPool;
 import com.ninhhk.faster.transformer.Transformation;
+import com.ninhhk.faster.utils.ExifUtils;
 import com.ninhhk.faster.utils.MemoryUtils;
 
 import java.io.InputStream;
@@ -27,19 +31,19 @@ public class LruMemoryStore extends MemoryStore {
 
     private LruCache<Key, Bitmap> memCache;
     private FasterBitmapPool pool = FasterBitmapPool.getInstance();
-    private SparseIntArray bitmapOrientaions = new SparseIntArray();
+    private SparseIntArray orientationTags = new SparseIntArray();
 
 
     public LruMemoryStore(BitmapStore bitmapStore, Context context) {
         super(bitmapStore);
 
         MAX_SIZE = getSuitableSize(context);
-        memCache = new LruCache<Key, Bitmap>(MAX_SIZE){
+        memCache = new LruCache<Key, Bitmap>(MAX_SIZE) {
             @Override
             protected void entryRemoved(boolean evicted, Key key, Bitmap oldValue, Bitmap newValue) {
 
                 // bitmap has rejected
-                if (evicted && newValue == null){
+                if (evicted && newValue == null) {
                     // put to bitmap pool
                     pool.put(oldValue);
                 }
@@ -75,11 +79,11 @@ public class LruMemoryStore extends MemoryStore {
             request.isLoadForMem = true;
 
             synchronized (this) {
-                request.exifOrientation = bitmapOrientaions.get(key.hashCode(), 0);
+                request.orientationTag = orientationTags.get(key.hashCode(), ExifInterface.ORIENTATION_UNDEFINED);
             }
 
             Log.i(TAG, "Bitmap with key " + key.toString() + "has read from mem");
-        }else{
+        } else {
 
             // use byte[] to load & decode image
             byte[] originBytes = loadFromDisk(key, request);
@@ -90,7 +94,7 @@ public class LruMemoryStore extends MemoryStore {
                     .put(originBytes);
 
             synchronized (this) {
-                bitmapOrientaions.put(key.hashCode(), request.exifOrientation);
+                orientationTags.put(key.hashCode(), request.orientationTag);
             }
 
             //use InputStream to load & decode image, not stable for UrlStringResource
@@ -107,8 +111,16 @@ public class LruMemoryStore extends MemoryStore {
 //            }
 
         }
+        bm = applyExifOrientation(bm, request.orientationTag, request.getRequestOption());
         bm = applyTransformation(bm, request.getRequestOption());
         return bm;
+    }
+
+    private Bitmap applyExifOrientation(Bitmap bitmap,
+                                        int orientationTag, RequestOption requestOption) {
+        Matrix matrix = ExifUtils.getTransformMatrix(orientationTag);
+        Bitmap newBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        return newBitmap;
     }
 
     private Bitmap applyTransformation(Bitmap bm, RequestOption requestOption) {

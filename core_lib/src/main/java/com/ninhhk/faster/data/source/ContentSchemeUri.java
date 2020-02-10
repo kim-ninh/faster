@@ -41,7 +41,7 @@ public class ContentSchemeUri extends UriSource {
             is = contentResolver.openInputStream(model);
             if (is == null)
                 return new byte[0];
-            request.exifOrientation = ExifUtils.getImageRotation(is);
+            request.orientationTag = ExifUtils.getOrientationTag(is);
             is.close();
 
             is = contentResolver.openInputStream(model);

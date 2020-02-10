@@ -8,32 +8,37 @@ import com.ninhhk.faster.transformer.Transformation;
 
 public class RequestOption {
 
-    public static final int UNSET = -1;
-
-    private int finalWidth = UNSET;
-    private int finalHeight = UNSET;
     private Transformation transformation = new DefaultTransformation();
     private ImageView.ScaleType scaleType;
     private Drawable placeHolderDrawable = null;
+    private Size finalSize = new Size();
 
-    public void setFinalWidth(int finalWidth) {
-        this.finalWidth = finalWidth;
+    public int getFinalWidth() {
+        return finalSize.getWidth();
     }
 
-    public void setFinalHeight(int finalHeight) {
-        this.finalHeight = finalHeight;
+    public void setFinalWidth(int finalWidth) {
+        finalSize.setWidth(finalWidth);
     }
 
     public void setTransformation(Transformation transformation) {
         this.transformation = transformation;
     }
 
-    public int getFinalWidth() {
-        return finalWidth;
+    public int getFinalHeight() {
+        return finalSize.getHeight();
     }
 
-    public int getFinalHeight() {
-        return finalHeight;
+    public void setFinalHeight(int finalHeight) {
+        finalSize.setHeight(finalHeight);
+    }
+
+    public void swapSizeRatio() {
+        finalSize.swapRatio();
+    }
+
+    public boolean isSizeUnset() {
+        return finalSize.isUnset();
     }
 
     public Transformation getTransformation() {
@@ -55,8 +60,8 @@ public class RequestOption {
     @Override
     public String toString() {
         return "RequestOption{" +
-                "finalWidth=" + finalWidth +
-                ", finalHeight=" + finalHeight +
+                "finalWidth=" + finalSize.getWidth() +
+                ", finalHeight=" + finalSize.getHeight() +
                 ", transformation=" + transformation +
                 '}';
     }

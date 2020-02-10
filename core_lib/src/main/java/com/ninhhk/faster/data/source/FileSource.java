@@ -17,14 +17,12 @@ import java.nio.ByteBuffer;
 public class FileSource extends DataSource<File> {
     public FileSource(File model) {
         super(model);
-        exifOrientation = ExifUtils.getImageRotation(model);
     }
 
     @Override
     public byte[] load(Context context, Request request) {
         try {
-
-            request.exifOrientation = exifOrientation;
+            request.orientationTag = ExifUtils.getOrientationTag(model);
             FileInputStream fileInputStream = new FileInputStream(model);
             return readFromStream(fileInputStream);
 

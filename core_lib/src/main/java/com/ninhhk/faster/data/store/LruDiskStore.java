@@ -133,7 +133,8 @@ public class LruDiskStore extends DiskStore {
             snapshot = diskLruCache.get(fileName);
 
             is = snapshot.getInputStream(0);
-            request.exifOrientation = ExifUtils.getImageRotation(is);
+            request.orientationTag = ExifUtils.getOrientationTag(is);
+
             is.close();
 
             is = snapshot.getInputStream(0);
