@@ -3,6 +3,7 @@ package com.ninhhk.faster.data.store;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import com.ninhhk.faster.Config;
 import com.ninhhk.faster.Key;
 import com.ninhhk.faster.Request;
 
@@ -31,5 +32,9 @@ public class BitmapStore {
     public void clearCache() {
         memoryStore.clear();
         diskStore.clear();
+    }
+
+    public void setConfig(Config config){
+        diskStore.setFasterConfig(config);
     }
 }

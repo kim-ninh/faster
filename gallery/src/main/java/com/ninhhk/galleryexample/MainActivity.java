@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.clear_cache) {
-            Faster faster = Faster.getInstance();
+            Faster faster = Faster.getInstance(this);
             if (faster != null) {
                 faster.clearCache();
             }

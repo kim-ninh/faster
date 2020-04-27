@@ -40,10 +40,13 @@ public class LruDiskStore extends DiskStore {
 
     public LruDiskStore(BitmapStore bitmapStore, Context context) {
         super(bitmapStore, context);
-        openIfClose();
     }
 
     private void openIfClose() {
+        if (! config.isUseDiskCache()){
+            return;
+        }
+
         File directory = getDir();
 
         if (diskLruCache != null && !diskLruCache.isClosed())
@@ -69,7 +72,7 @@ public class LruDiskStore extends DiskStore {
 
         openIfClose();
 
-        if (exists(key)) {
+        if (config.isUseDiskCache() && exists(key)) {
             bytes = openFileWithKey(key, request);
 
             return bytes;
@@ -178,7 +181,9 @@ public class LruDiskStore extends DiskStore {
         byte[] dataSourceBytes;
 
         dataSourceBytes = dataSource.load(context, request);
-        saveToDisk(key, dataSourceBytes);
+        if (config.isUseDiskCache()){
+            saveToDisk(key, dataSourceBytes);
+        }
         return dataSourceBytes;
     }
 

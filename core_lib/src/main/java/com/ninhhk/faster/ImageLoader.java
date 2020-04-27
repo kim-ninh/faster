@@ -48,4 +48,8 @@ public class ImageLoader implements Callback<Bitmap> {
     public void clearCache() {
         bitmapStore.clearCache();
     }
+
+    public void setConfig(Config config){
+        bitmapStore.setConfig(config);
+    }
 }

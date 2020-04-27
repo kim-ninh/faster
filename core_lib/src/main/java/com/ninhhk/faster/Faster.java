@@ -6,20 +6,22 @@ public class Faster {
     private static Faster mInstance = null;
     private final ImageLoader imageLoader;
     private Request.Builder mBuilder;
+    private Config DEFAULT_CONFIG = new Config.Builder().build();
 
 
     private Faster(Context context) {
         imageLoader = new MyImageLoader(context);
+        imageLoader.setConfig(DEFAULT_CONFIG);
     }
 
     public static Request.Builder with(Context context) {
-        mInstance = getInstance(context.getApplicationContext());
+        mInstance = mGetInstance(context.getApplicationContext());
         return mInstance.getRequestBuilder();
     }
 
 
 
-    private static Faster getInstance(Context context) {
+    private static Faster mGetInstance(Context context) {
         if (mInstance == null) {
             synchronized (Faster.class) {
                 if (mInstance == null) {
@@ -30,8 +32,8 @@ public class Faster {
         return mInstance;
     }
 
-    public static Faster getInstance(){
-        return mInstance;
+    public static Faster getInstance(Context context){
+        return mGetInstance(context);
     }
 
     public Request.Builder getRequestBuilder() {
@@ -41,5 +43,9 @@ public class Faster {
 
     public void clearCache() {
         imageLoader.clearCache();
+    }
+
+    public void setConfig(Config config){
+        imageLoader.setConfig(config);
     }
 }

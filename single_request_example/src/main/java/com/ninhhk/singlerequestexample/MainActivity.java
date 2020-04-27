@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity
         if (v == buttonReset){
             resetAll();
         }else if (v == buttonClearCache){
-            Faster faster = Faster.getInstance();
+            Faster faster = Faster.getInstance(this);
             if (faster != null){
                 faster.clearCache();
             }
