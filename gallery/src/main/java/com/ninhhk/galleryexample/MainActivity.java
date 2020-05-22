@@ -1,18 +1,21 @@
 package com.ninhhk.galleryexample;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
+import android.graphics.Point;
+import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -30,18 +33,19 @@ import com.ninhhk.faster.Faster;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class MainActivity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<List<MediaStoreData>> {
+        implements LoaderManager.LoaderCallbacks<List<MediaStoreData>>,
+        PhotoAdapter.OnPhotoClickListener {
 
     private static final int REQUEST_READ_STORAGE = 0;
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    public static final Random sRandom = new Random();
-    public static final ColorDrawable PLACE_HOLDER_DRAWABLE = new ColorDrawable(Color.TRANSPARENT);
     private List<MediaStoreData> photoItems = new ArrayList<>();
+
     private RecyclerView recyclerView;
+    private ImageView expandedImage;
+    private View container;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,14 +53,21 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         recyclerView = findViewById(R.id.photo_recycler_view);
+        expandedImage = findViewById(R.id.expanded_image);
+        container = findViewById(R.id.container);
+
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
-        recyclerView.setAdapter(new PhotoAdapter(photoItems));
+        recyclerView.setAdapter(new PhotoAdapter(photoItems, this));
+
+        int spaceInPixels = getResources().getDimensionPixelSize(R.dimen.grid_spacing);
+        recyclerView.addItemDecoration(
+                new SpacesItemDecoration(spaceInPixels, 3, false));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             requestStoragePermission();
-        }else{
+        } else {
             LoaderManager.getInstance(this).initLoader(0, null, this);
         }
     }
@@ -81,7 +92,7 @@ public class MainActivity extends AppCompatActivity
 
     private void requestStoragePermission() {
         ActivityCompat.requestPermissions(
-                this, new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_READ_STORAGE);
+                this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_READ_STORAGE);
     }
 
     @Override
@@ -89,8 +100,7 @@ public class MainActivity extends AppCompatActivity
             int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
-            case REQUEST_READ_STORAGE:
-            {
+            case REQUEST_READ_STORAGE: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     LoaderManager.getInstance(this).initLoader(0, null, this);
@@ -111,7 +121,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onLoadFinished(@NonNull Loader<List<MediaStoreData>> loader, List<MediaStoreData> data) {
-        recyclerView.setAdapter(new PhotoAdapter(data));
+        recyclerView.setAdapter(new PhotoAdapter(data, this));
     }
 
     @Override
@@ -120,45 +130,17 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    private class PhotoAdapter extends RecyclerView.Adapter<PhotoViewHolder>{
-        private List<MediaStoreData> mediaStoreData;
+    @Override
+    public void onClick(@NonNull View view, @NonNull Uri uri) {
 
-        private PhotoAdapter(List<MediaStoreData> mediaStoreData) {
-            this.mediaStoreData = mediaStoreData;
-        }
+        ZoomThumbImageAnimation animation = new ZoomThumbImageAnimation(view, container);
 
-        @NonNull
-        @Override
-        public PhotoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            View v = inflater.inflate(R.layout.list_item_gallery, parent, false);
-            return new PhotoViewHolder(v);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull PhotoViewHolder holder, int position) {
-            Faster.with(MainActivity.this)
-                    .load(mediaStoreData.get(position).uri)
-                    .placeholder(new ColorDrawable(sRandom.nextInt()))
-                    .into(holder.imageView);
-        }
-
-        @Override
-        public int getItemCount() {
-            return mediaStoreData.size();
-        }
-    }
-
-    private class PhotoViewHolder extends RecyclerView.ViewHolder{
-        private ImageView imageView;
-
-        public PhotoViewHolder(@NonNull View itemView) {
-            super(itemView);
-            imageView = itemView.findViewById(R.id.item_image_view);
-        }
-
-        public void bindDrawable(Drawable drawable){
-            imageView.setImageDrawable(drawable);
-        }
+        Faster.with(this)
+                .load(uri)
+                .setListener(data -> {
+                    animation.zoomIn(expandedImage);
+                    expandedImage.setOnClickListener(animation::zoomOut);
+                })
+                .into(expandedImage);
     }
 }

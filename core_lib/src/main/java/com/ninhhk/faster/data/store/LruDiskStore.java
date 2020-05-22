@@ -264,6 +264,10 @@ public class LruDiskStore extends DiskStore {
 
     @Override
     public void clear() {
+        if (! config.isUseDiskCache()){
+            return;
+        }
+
         try {
             diskLruCache.delete();
         } catch (IOException e) {
