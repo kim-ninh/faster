@@ -2,9 +2,12 @@ package com.ninhhk.faster.data.source;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import com.ninhhk.faster.Request;
 import com.ninhhk.faster.data.store.ByteBufferPool;
 import com.ninhhk.faster.utils.MemoryUtils;
+import com.ninhhk.faster.utils.StreamUtils;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -18,48 +21,34 @@ public class UrlStringSource extends DataSource<String> {
     private static final String TAG = UrlStringSource.class.getSimpleName();
     private static final int MAX_BUFFER_IN_MB = 4;
     private static final int MAX_BUFFER_IN_BYTE = MAX_BUFFER_IN_MB * 1024 * 1024;
-//    private static final ByteBuffer byteBuffer = ByteBuffer.allocate(MAX_BUFFER_IN_BYTE);
-//    private static final ByteBuffer byteBuffer = null;
-//    private static byte[] bytes = new byte[1024];
-
-//    private ByteBuffer byteBuffer = ByteBuffer.allocate(MAX_BUFFER_IN_BYTE);
-//    private byte[] bytes = new byte[1024];
 
     public UrlStringSource(String model) {
         super(model);
     }
 
+    @NonNull
     @Override
-    public byte[] load(Context context, Request request) {
-        byte[] bytes = new byte[0];
-        HttpURLConnection connection;
+    public ByteBuffer loadToBuffer(@NonNull Context context,
+                                   @NonNull Request request) {
+
+        HttpURLConnection connection = null;
+        ByteBuffer byteBuffer = ByteBuffer.allocate(0);
         InputStream is;
+
         try {
             URL url = new URL(UrlStringSource.this.model);
             connection = (HttpURLConnection) url.openConnection();
             is = new BufferedInputStream(connection.getInputStream());
-            bytes = readFromStream(is);
+            byteBuffer = StreamUtils.readToBuffer(is);
             is.close();
-
-        } catch (IOException e) {
+        }catch (IOException e){
             e.printStackTrace();
+        }finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
-        return bytes;
-    }
-
-    @Override
-    public InputStream getInputStream(Context context) {
-
-        HttpURLConnection connection;
-        InputStream is = null;
-        try {
-            URL url = new URL(UrlStringSource.this.model);
-            connection = (HttpURLConnection) url.openConnection();
-            is = new BufferedInputStream(connection.getInputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return is;
+        return byteBuffer;
     }
 
     @Override
@@ -74,24 +63,4 @@ public class UrlStringSource extends DataSource<String> {
         return remoteFileName;
     }
 
-    private byte[] readFromStream(InputStream is) throws IOException {
-        int MAX_BYTE_READ_WRITE = 1024;
-        int nByteRead;
-
-        ByteBuffer byteBuffer = ByteBufferPool.getInstance(MemoryUtils.BUFFER_CAPACITY)
-                .get();
-        byte[] bytes = new byte[MAX_BYTE_READ_WRITE];
-
-//        byteBuffer.clear();
-
-        do {
-            nByteRead = is.read(bytes, 0, MAX_BYTE_READ_WRITE);
-            if (nByteRead == -1)
-                break;
-
-            byteBuffer.put(bytes, 0, nByteRead);
-        } while (true);
-
-        return byteBuffer.array();
-    }
 }

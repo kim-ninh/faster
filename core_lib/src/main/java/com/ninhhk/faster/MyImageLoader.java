@@ -14,11 +14,12 @@ import java.lang.ref.WeakReference;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class MyImageLoader extends ImageLoader {
-    public static final int TOTAL_THREAD_AVAILABLE = 6;
+    public static final int TOTAL_THREAD_AVAILABLE = 4;
     private static final String TAG = MyImageLoader.class.getSimpleName();
     private static final int FADE_IN_TIME = 300;
     private static Handler mainThreadHandler = new Handler(Looper.getMainLooper());

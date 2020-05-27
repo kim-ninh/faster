@@ -2,35 +2,15 @@ package com.ninhhk.faster.decoder;
 
 import android.graphics.BitmapFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 public class HighQualityImageDecoder extends ImageDecoder {
 
     public HighQualityImageDecoder() {
     }
 
     @Override
-    protected int[] config(byte[] bytes) {
+    protected int[] config(byte[] bytes, int offset, int length) {
         opts.inJustDecodeBounds = true;
-        BitmapFactory.decodeByteArray(bytes, 0, bytes.length , opts);
-        int originWidth = opts.outWidth;
-        int originHeight = opts.outHeight;
-
-        opts.inSampleSize = calculateSampleSize(originWidth, originHeight);
-        return new int[]{originWidth / opts.inSampleSize, originHeight / opts.inSampleSize};
-    }
-
-    @Override
-    protected int[] config(InputStream is) {
-        opts.inJustDecodeBounds = true;
-        BitmapFactory.decodeStream(is, null, opts);
-        try {
-            is.reset();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        BitmapFactory.decodeByteArray(bytes, offset, length, opts);
         int originWidth = opts.outWidth;
         int originHeight = opts.outHeight;
 

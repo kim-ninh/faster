@@ -2,16 +2,16 @@ package com.ninhhk.faster.data.source;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import com.ninhhk.faster.Request;
-import com.ninhhk.faster.data.store.ByteBufferPool;
 import com.ninhhk.faster.utils.ExifUtils;
-import com.ninhhk.faster.utils.MemoryUtils;
+import com.ninhhk.faster.utils.StreamUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 public class FileSource extends DataSource<File> {
@@ -19,24 +19,22 @@ public class FileSource extends DataSource<File> {
         super(model);
     }
 
+    @NonNull
     @Override
-    public byte[] load(Context context, Request request) {
+    public ByteBuffer loadToBuffer(@NonNull Context context,
+                                   @NonNull Request request) {
         try {
             request.orientationTag = ExifUtils.getOrientationTag(model);
             FileInputStream fileInputStream = new FileInputStream(model);
-            return readFromStream(fileInputStream);
+
+            return StreamUtils.readToBuffer(fileInputStream);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new byte[0];
-    }
-
-    @Override
-    public InputStream getInputStream(Context context) {
-        return null;
+        return ByteBuffer.allocate(0);
     }
 
     @Override
@@ -44,24 +42,4 @@ public class FileSource extends DataSource<File> {
         return model.getAbsolutePath();
     }
 
-    private byte[] readFromStream(InputStream is) throws IOException {
-        int MAX_BYTE_READ_WRITE = 1024;
-        int nByteRead;
-
-        ByteBuffer byteBuffer = ByteBufferPool.getInstance(MemoryUtils.BUFFER_CAPACITY)
-                .get();
-        byte[] bytes = new byte[MAX_BYTE_READ_WRITE];
-
-//        byteBuffer.clear();
-
-        do {
-            nByteRead = is.read(bytes, 0, MAX_BYTE_READ_WRITE);
-            if (nByteRead == -1)
-                break;
-
-            byteBuffer.put(bytes, 0, nByteRead);
-        } while (true);
-
-        return byteBuffer.array();
-    }
 }

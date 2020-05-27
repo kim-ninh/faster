@@ -6,7 +6,7 @@ import androidx.annotation.Nullable;
 import com.ninhhk.faster.data.source.DataSource;
 
 public class BitmapKey implements Key {
-    private static final int PRIME_NUM = 13;
+    private static final int PRIME_NUM = 2;
     private RequestOption requestOption;
     private int hash = 0;
 

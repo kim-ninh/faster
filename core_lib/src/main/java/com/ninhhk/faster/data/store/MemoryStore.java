@@ -3,10 +3,13 @@ package com.ninhhk.faster.data.store;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import androidx.annotation.NonNull;
+
 import com.ninhhk.faster.Key;
 import com.ninhhk.faster.Request;
 
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 public abstract class MemoryStore {
 
@@ -30,9 +33,9 @@ public abstract class MemoryStore {
 
     public abstract Bitmap load(Key key, Request request);
 
-    protected abstract byte[] loadFromDisk(Key key, Request request);
-
-    protected abstract InputStream getStreamFromFile(Key key, Request request);
+    @NonNull
+    protected abstract ByteBuffer loadFromDisk(@NonNull Key key,
+                                               @NonNull Request request);
 
     protected abstract boolean exists(Key key);
 

@@ -8,6 +8,7 @@ import android.util.Log;
 import android.util.LruCache;
 import android.util.SparseIntArray;
 
+import androidx.annotation.NonNull;
 import androidx.exifinterface.media.ExifInterface;
 
 import com.ninhhk.faster.Key;
@@ -21,7 +22,7 @@ import com.ninhhk.faster.transformer.Transformation;
 import com.ninhhk.faster.utils.ExifUtils;
 import com.ninhhk.faster.utils.MemoryUtils;
 
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 public class LruMemoryStore extends MemoryStore {
 
@@ -85,30 +86,20 @@ public class LruMemoryStore extends MemoryStore {
             Log.i(TAG, "Bitmap with key " + key.toString() + "has read from mem");
         } else {
 
-            // use byte[] to load & decode image
-            byte[] originBytes = loadFromDisk(key, request);
-            Bitmap bitmap = decodeBitmapAndSave(key, originBytes, request.getRequestOption(), request.getImageDecoder());
-            bm = bitmap;
+            ByteBuffer byteBuffer = loadFromDisk(key, request);
+            bm = decodeBitmapAndSave(key, byteBuffer, request.getRequestOption(), request.getImageDecoder());
 
-            ByteBufferPool.getInstance(MemoryUtils.BUFFER_CAPACITY)
-                    .put(originBytes);
+            try {
+                ByteBufferPool.getInstance(MemoryUtils.BUFFER_CAPACITY)
+                        .put(byteBuffer);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
             synchronized (this) {
                 orientationTags.put(key.hashCode(), request.orientationTag);
             }
 
-            //use InputStream to load & decode image, not stable for UrlStringResource
-
-//            InputStream bufferedInputStream;
-//            Bitmap bitmap;
-//            try {
-//                bufferedInputStream = getStreamFromFile(key, request);
-//                bitmap = decodeBitmapAndSave(key, bufferedInputStream, request.getRequestOption(), request.getImageDecoder());
-//                bm = bitmap;
-//                bufferedInputStream.close();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
 
         }
         bm = applyExifOrientation(bm, request.orientationTag, request.getRequestOption());
@@ -128,39 +119,21 @@ public class LruMemoryStore extends MemoryStore {
         return transformation.transform(bm, requestOption.getFinalWidth(), requestOption.getFinalHeight());
     }
 
-    private Bitmap decodeBitmapAndSave(Key key,
-                                       byte[] originBytes,
-                                       RequestOption requestOpts,
-                                       ImageDecoder decoder) {
-        Bitmap bitmap = decodeFromBytes(originBytes, decoder, requestOpts);
+    @NonNull
+    private Bitmap decodeBitmapAndSave(@NonNull Key key,
+                                       @NonNull ByteBuffer byteBuffer,
+                                       @NonNull RequestOption requestOpts,
+                                       @NonNull ImageDecoder decoder){
+
+        Bitmap bitmap =  decodeFromByteBuffer(byteBuffer, decoder, requestOpts);
         saveToMemCache(key, bitmap);
         return bitmap;
     }
 
-    private Bitmap decodeBitmapAndSave(Key key,
-                                       InputStream is,
-                                       RequestOption requestOption,
-                                       ImageDecoder decoder) {
-        Bitmap bitmap = decodeFromStream(is, decoder, requestOption);
-        saveToMemCache(key, bitmap);
-        return bitmap;
-    }
-
-    private Bitmap decodeFromStream(InputStream is, ImageDecoder decoder, RequestOption requestOption) {
-        Bitmap bitmap;
-        bitmap = decoder.decode(is, requestOption);
-        return bitmap;
-    }
-
+    @NonNull
     @Override
-    protected byte[] loadFromDisk(Key key, Request request) {
-
-        return diskStore.load(key, request);
-    }
-
-    @Override
-    protected InputStream getStreamFromFile(Key key, Request request) {
-        return diskStore.getInputStream(key, request);
+    protected ByteBuffer loadFromDisk(@NonNull Key key, @NonNull Request request) {
+        return diskStore.loadToBuffer(key, request);
     }
 
     private void saveToMemCache(Key key, Bitmap bitmap) {
@@ -168,12 +141,12 @@ public class LruMemoryStore extends MemoryStore {
         LogUtils.i(TAG, StringUtils.concat("Bitmap with key ", key.toString(), " has been cached!"));
     }
 
-    private Bitmap decodeFromBytes(byte[] bytes,
-                                   ImageDecoder decoder,
-                                   RequestOption requestOption) {
-
+    @NonNull
+    private Bitmap decodeFromByteBuffer(@NonNull ByteBuffer byteBuffer,
+                                        @NonNull ImageDecoder decoder,
+                                        @NonNull RequestOption requestOption){
         Bitmap bitmap;
-        bitmap = decoder.decode(bytes, requestOption);
+        bitmap = decoder.decode(byteBuffer, requestOption);
         return bitmap;
     }
 

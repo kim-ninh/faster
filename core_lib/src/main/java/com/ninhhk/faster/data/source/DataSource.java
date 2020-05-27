@@ -2,11 +2,12 @@ package com.ninhhk.faster.data.source;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.ninhhk.faster.Request;
 
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 public abstract class DataSource<T> {
     protected T model;
@@ -17,9 +18,9 @@ public abstract class DataSource<T> {
         this.model = model;
     }
 
-    abstract public byte[] load(Context context, Request request);
-
-    abstract public InputStream getInputStream(Context context);
+    @NonNull
+    abstract public ByteBuffer loadToBuffer(@NonNull Context context,
+                                            @NonNull Request request);
 
     abstract public String name();
 

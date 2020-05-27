@@ -1,5 +1,8 @@
 package com.ninhhk.faster.data.store;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -7,7 +10,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class ByteBufferPool {
     // POOL_CAPACITY must be smaller or equal TOTAL_THREAD_AVAILABLE
     private static final int POOL_CAPACITY = 10;
-    private static ByteBufferPool sByteByfferPool;
+    private static ByteBufferPool sByteBufferPool;
 
     private BlockingQueue<ByteBuffer> byteBuffers;
     private int bufferCapacity;
@@ -22,25 +25,23 @@ public class ByteBufferPool {
     }
 
     public static ByteBufferPool getInstance(int bufferCapacity) {
-        if (sByteByfferPool == null) {
+        if (sByteBufferPool == null) {
             synchronized (ByteBufferPool.class) {
-                if (sByteByfferPool == null) {
-                    sByteByfferPool = new ByteBufferPool(bufferCapacity);
+                if (sByteBufferPool == null) {
+                    sByteBufferPool = new ByteBufferPool(bufferCapacity);
                 }
             }
         }
-        return sByteByfferPool;
+        return sByteBufferPool;
     }
 
-    public synchronized ByteBuffer get() {
+    @NonNull
+    public synchronized ByteBuffer get()
+            throws InterruptedException {
         ByteBuffer byteBuffer;
         if (byteBuffers.size() != 0) {
-            try {
-                byteBuffer = byteBuffers.take();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                return null;
-            }
+            byteBuffer = byteBuffers.take();
+            byteBuffer.clear();
         } else {
             byteBuffer = ByteBuffer.allocate(bufferCapacity);
         }
@@ -48,12 +49,8 @@ public class ByteBufferPool {
     }
 
 
-    public void put(byte[] unusedBytes) {
-//        byteBuffers.add(ByteBuffer.wrap(unusedBytes));
-        try {
-            byteBuffers.put(ByteBuffer.wrap(unusedBytes));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    public void put(@NonNull ByteBuffer byteBuffer)
+            throws InterruptedException {
+        byteBuffers.put(byteBuffer);
     }
 }

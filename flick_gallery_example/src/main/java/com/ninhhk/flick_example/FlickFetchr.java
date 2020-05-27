@@ -24,9 +24,9 @@ public class FlickFetchr {
     public byte[] getUrlBytes(String urlSpec) throws IOException {
         URL url = new URL(urlSpec);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
             InputStream in = connection.getInputStream();
 
             if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
@@ -40,11 +40,10 @@ public class FlickFetchr {
             while ((bytesRead = in.read(buffer)) > 0) {
                 out.write(buffer, 0, bytesRead);
             }
-            out.close();
-            return out.toByteArray();
         } finally {
             connection.disconnect();
         }
+        return out.toByteArray();
     }
 
     public String getUrlString(String urlSpec) throws IOException {
