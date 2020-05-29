@@ -1,15 +1,14 @@
 package com.ninhhk.faster.data.source;
 
-import android.content.Context;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.ninhhk.faster.Request;
+import com.ninhhk.faster.Loadable;
 
 import java.nio.ByteBuffer;
 
-public abstract class DataSource<T> {
+public abstract class DataSource<T>
+    implements Loadable<ByteBuffer> {
+
     protected T model;
 
     protected int exifOrientation = 0;
@@ -17,10 +16,6 @@ public abstract class DataSource<T> {
     public DataSource(T model) {
         this.model = model;
     }
-
-    @NonNull
-    abstract public ByteBuffer loadToBuffer(@NonNull Context context,
-                                            @NonNull Request request);
 
     abstract public String name();
 

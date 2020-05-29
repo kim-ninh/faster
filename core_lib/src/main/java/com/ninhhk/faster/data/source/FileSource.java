@@ -1,9 +1,9 @@
 package com.ninhhk.faster.data.source;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import com.ninhhk.faster.Key;
 import com.ninhhk.faster.Request;
 import com.ninhhk.faster.utils.ExifUtils;
 import com.ninhhk.faster.utils.StreamUtils;
@@ -19,10 +19,14 @@ public class FileSource extends DataSource<File> {
         super(model);
     }
 
-    @NonNull
     @Override
-    public ByteBuffer loadToBuffer(@NonNull Context context,
-                                   @NonNull Request request) {
+    public String name() {
+        return model.getAbsolutePath();
+    }
+
+    @Nullable
+    @Override
+    public ByteBuffer load(@NonNull Key key, @NonNull Request request) {
         try {
             request.orientationTag = ExifUtils.getOrientationTag(model);
             FileInputStream fileInputStream = new FileInputStream(model);
@@ -36,10 +40,4 @@ public class FileSource extends DataSource<File> {
         }
         return ByteBuffer.allocate(0);
     }
-
-    @Override
-    public String name() {
-        return model.getAbsolutePath();
-    }
-
 }

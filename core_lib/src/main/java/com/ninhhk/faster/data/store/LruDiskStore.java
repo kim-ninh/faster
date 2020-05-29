@@ -1,19 +1,18 @@
 package com.ninhhk.faster.data.store;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.jakewharton.disklrucache.DiskLruCache;
 import com.ninhhk.faster.Key;
 import com.ninhhk.faster.LogUtils;
 import com.ninhhk.faster.Request;
 import com.ninhhk.faster.StringUtils;
-import com.ninhhk.faster.data.source.DataSource;
 import com.ninhhk.faster.utils.ExifUtils;
 import com.ninhhk.faster.utils.StreamUtils;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
@@ -32,14 +31,12 @@ public class LruDiskStore extends DiskStore {
     private DiskLruCache diskLruCache;
 
 
-    public LruDiskStore(BitmapStore bitmapStore, Context context) {
-        super(bitmapStore, context);
+    public LruDiskStore(@NonNull File cacheBaseDir){
+        super(cacheBaseDir);
+        openIfClose();
     }
 
     private synchronized void openIfClose() {
-        if (! config.isUseDiskCache()){
-            return;
-        }
 
         if (diskLruCache != null && !diskLruCache.isClosed())
             return;
@@ -53,23 +50,6 @@ public class LruDiskStore extends DiskStore {
     }
 
     @NonNull
-    @Override
-    ByteBuffer loadToBuffer(@NonNull Key key, @NonNull Request request) {
-
-        ByteBuffer byteBuffer;
-
-        openIfClose();
-
-        if (config.isUseDiskCache() && exists(key)) {
-            byteBuffer = readFileWithKey(key, request);
-
-            return byteBuffer;
-        }
-
-        byteBuffer = loadDataSource(key, request.getDataSource(), request);
-        return byteBuffer;
-    }
-
     private ByteBuffer readFileWithKey(@NonNull Key key,
                                        @NonNull Request request){
         ByteBuffer byteBuffer = ByteBuffer.allocate(0);
@@ -100,21 +80,6 @@ public class LruDiskStore extends DiskStore {
 
         String fileName = String.valueOf(key.hashCode());
         return fileName;
-    }
-
-    @NonNull
-    @Override
-    protected ByteBuffer loadDataSource(@NonNull Key key,
-                                        @NonNull DataSource<?> dataSource,
-                                        @NonNull Request request) {
-        ByteBuffer byteBuffer;
-
-        byteBuffer = dataSource.loadToBuffer(context, request);
-        if (config.isUseDiskCache()){
-            saveToDisk(key, byteBuffer);
-        }
-
-        return byteBuffer;
     }
 
 
@@ -155,14 +120,29 @@ public class LruDiskStore extends DiskStore {
 
     @Override
     public void clear() {
-        if (! config.isUseDiskCache()){
-            return;
-        }
 
         try {
             diskLruCache.delete();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void cache(@NonNull Key key, @NonNull ByteBuffer data) {
+        saveToDisk(key, data);
+    }
+
+    @Nullable
+    @Override
+    public ByteBuffer load(@NonNull Key key, @NonNull Request request) {
+        ByteBuffer data = null;
+
+        openIfClose();
+        if (exists(key)){
+            data = readFileWithKey(key, request);
+        }
+
+        return data;
     }
 }

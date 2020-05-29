@@ -1,11 +1,12 @@
 package com.ninhhk.faster.data.source;
 
-import android.content.Context;
 import android.content.res.Resources;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import com.ninhhk.faster.Key;
 import com.ninhhk.faster.Request;
 import com.ninhhk.faster.utils.ExifUtils;
 import com.ninhhk.faster.utils.StreamUtils;
@@ -16,17 +17,23 @@ import java.nio.ByteBuffer;
 
 public class DrawableResource extends DataSource<Integer> {
 
-    public DrawableResource(@DrawableRes int resId) {
+    private Resources resources;
+
+    public DrawableResource(@NonNull Resources resources,
+                            @DrawableRes int resId){
         super(resId);
+        this.resources = resources;
     }
 
-    @NonNull
     @Override
-    public ByteBuffer loadToBuffer(@NonNull Context context,
-                                   @NonNull Request request) {
+    public String name() {
+        return "resId_" + model;
+    }
 
+    @Nullable
+    @Override
+    public ByteBuffer load(@NonNull Key key, @NonNull Request request) {
         ByteBuffer byteBuffer = ByteBuffer.allocate(0);
-        Resources resources = context.getResources();
         InputStream is;
         try {
             is = resources.openRawResource(model);
@@ -42,10 +49,4 @@ public class DrawableResource extends DataSource<Integer> {
         }
         return byteBuffer;
     }
-
-    @Override
-    public String name() {
-        return "resId_" + model;
-    }
-
 }

@@ -2,24 +2,24 @@ package com.ninhhk.faster;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 public class Faster {
     private static Faster mInstance = null;
     private final ImageLoader imageLoader;
     private Request.Builder mBuilder;
-    private Config DEFAULT_CONFIG = new Config.Builder().build();
-
+    private static Config DEFAULT_CONFIG = new Config.Builder().build();
+    private static Config sConfig = DEFAULT_CONFIG;
 
     private Faster(Context context) {
-        imageLoader = new MyImageLoader(context);
-        imageLoader.setConfig(DEFAULT_CONFIG);
+        imageLoader = new ImageLoader(context, sConfig);
     }
 
-    public static Request.Builder with(Context context) {
-        mInstance = mGetInstance(context.getApplicationContext());
-        return mInstance.getRequestBuilder();
+    public static Request.Builder with(@NonNull Context context) {
+        Context applicationContext = context.getApplicationContext();
+        mInstance = mGetInstance(applicationContext);
+        return mInstance.getRequestBuilder(applicationContext);
     }
-
-
 
     private static Faster mGetInstance(Context context) {
         if (mInstance == null) {
@@ -36,8 +36,8 @@ public class Faster {
         return mGetInstance(context);
     }
 
-    public Request.Builder getRequestBuilder() {
-        mBuilder = new Request.Builder(imageLoader);
+    public Request.Builder getRequestBuilder(@NonNull Context context) {
+        mBuilder = new Request.Builder(imageLoader, context);
         return mBuilder;
     }
 
@@ -45,7 +45,7 @@ public class Faster {
         imageLoader.clearCache();
     }
 
-    public void setConfig(Config config){
-        imageLoader.setConfig(config);
+    public static void setConfig(@NonNull Config config){
+        Faster.sConfig = config;
     }
 }

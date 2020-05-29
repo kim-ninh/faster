@@ -1,5 +1,7 @@
 package com.ninhhk.faster;
 
+import androidx.annotation.NonNull;
+
 public interface Callback<T> {
-    void onReady(T data);
+    void onReady(@NonNull T data);
 }

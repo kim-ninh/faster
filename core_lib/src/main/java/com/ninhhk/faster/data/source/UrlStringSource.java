@@ -1,12 +1,10 @@
 package com.ninhhk.faster.data.source;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import com.ninhhk.faster.Key;
 import com.ninhhk.faster.Request;
-import com.ninhhk.faster.data.store.ByteBufferPool;
-import com.ninhhk.faster.utils.MemoryUtils;
 import com.ninhhk.faster.utils.StreamUtils;
 
 import java.io.BufferedInputStream;
@@ -26,11 +24,21 @@ public class UrlStringSource extends DataSource<String> {
         super(model);
     }
 
-    @NonNull
     @Override
-    public ByteBuffer loadToBuffer(@NonNull Context context,
-                                   @NonNull Request request) {
+    public String name() {
+        String url = model;
+        String remoteFileName;
+        int lastIndexOfSlash;
 
+        lastIndexOfSlash = url.lastIndexOf('/');
+        remoteFileName = url.substring(lastIndexOfSlash + 1);
+
+        return remoteFileName;
+    }
+
+    @Nullable
+    @Override
+    public ByteBuffer load(@NonNull Key key, @NonNull Request request) {
         HttpURLConnection connection = null;
         ByteBuffer byteBuffer = ByteBuffer.allocate(0);
         InputStream is;
@@ -50,17 +58,4 @@ public class UrlStringSource extends DataSource<String> {
         }
         return byteBuffer;
     }
-
-    @Override
-    public String name() {
-        String url = model;
-        String remoteFileName;
-        int lastIndexOfSlash;
-
-        lastIndexOfSlash = url.lastIndexOf('/');
-        remoteFileName = url.substring(lastIndexOfSlash + 1);
-
-        return remoteFileName;
-    }
-
 }

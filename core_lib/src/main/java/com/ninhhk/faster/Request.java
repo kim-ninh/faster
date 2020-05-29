@@ -1,5 +1,6 @@
 package com.ninhhk.faster;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -22,6 +23,7 @@ import com.ninhhk.faster.transformer.TransformationFactory;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.nio.ByteBuffer;
 
 public class Request {
 
@@ -30,7 +32,7 @@ public class Request {
     private RequestOption requestOption;
     private WeakReference<ImageView> targetView;
     private ImageDecoder imageDecoder;
-    public boolean isLoadForMem = false;
+    public boolean isLoadFormMem = false;
     public int orientationTag = ExifInterface.ORIENTATION_UNDEFINED;
 
     public Request(Builder builder) {
@@ -63,6 +65,7 @@ public class Request {
 
     public static class Builder {
         public static final String TAG = Builder.class.getSimpleName();
+        private final Context context;
         private RequestOption requestOption;
         private WeakReference<ImageView> targetView;
         private DataSource<?> dataSource;
@@ -71,8 +74,10 @@ public class Request {
         private ImageDecoder imageDecoder;
         private boolean scaleTypeIsSet = false;
 
-        public Builder(ImageLoader imageLoader) {
+        public Builder(@NonNull ImageLoader imageLoader,
+                       @NonNull Context context){
             this.imageLoader = imageLoader;
+            this.context = context;
         }
 
         private void preLoadConfig() {
@@ -88,7 +93,7 @@ public class Request {
 
         public Builder load(@DrawableRes int resId) {
             preLoadConfig();
-            this.dataSource = new DrawableResource(resId);
+            this.dataSource = new DrawableResource(context.getResources(), resId);
             return this;
         }
 
@@ -186,7 +191,7 @@ public class Request {
 
         public Builder load(Uri uri) {
             preLoadConfig();
-            dataSource = UriSourceFactory.get(uri);
+            dataSource = UriSourceFactory.get(context.getContentResolver(), uri);
             return this;
         }
 

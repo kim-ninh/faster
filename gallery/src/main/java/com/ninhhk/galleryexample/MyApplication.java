@@ -11,6 +11,6 @@ public class MyApplication extends Application {
         super.onCreate();
 
         Config config = new Config.Builder().setUseDiskCache(false).build();
-        Faster.getInstance(this).setConfig(config);
+        Faster.setConfig(config);
     }
 }

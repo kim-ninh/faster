@@ -1,8 +1,7 @@
 package com.ninhhk.faster.data.store;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.ninhhk.faster.Key;
 import com.ninhhk.faster.Request;
@@ -19,29 +18,15 @@ public class DiskStoreImp extends DiskStore {
 
     private RequestManager requestManager = RequestManager.getInstance();
 
-    public DiskStoreImp(BitmapStore bitmapStore, Context context) {
-        super(bitmapStore, context);
-        initSubDir();
+    public DiskStoreImp(@NonNull File cacheBaseDir) {
+        super(cacheBaseDir);
     }
+
 
     private void initSubDir() {
         if (! cacheDir.exists()){
             cacheDir.mkdir();
         }
-    }
-
-    @NonNull
-    @Override
-    ByteBuffer loadToBuffer(@NonNull Key key, @NonNull Request request) {
-        return ByteBuffer.allocate(0);
-    }
-
-    @NonNull
-    @Override
-    protected ByteBuffer loadDataSource(@NonNull Key key,
-                                        @NonNull DataSource<?> dataSource,
-                                        @NonNull Request request) {
-        return ByteBuffer.allocate(0);
     }
 
     @Override
@@ -63,4 +48,14 @@ public class DiskStoreImp extends DiskStore {
         return new File(cacheDir, fileName);
     }
 
+    @Override
+    public void cache(@NonNull Key key, @NonNull ByteBuffer data) {
+
+    }
+
+    @Nullable
+    @Override
+    public ByteBuffer load(@NonNull Key key, @NonNull Request request) {
+        return null;
+    }
 }

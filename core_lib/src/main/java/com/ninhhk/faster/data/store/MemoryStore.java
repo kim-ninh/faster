@@ -1,43 +1,24 @@
 package com.ninhhk.faster.data.store;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 
 import androidx.annotation.NonNull;
 
+import com.ninhhk.faster.Cacheable;
 import com.ninhhk.faster.Key;
+import com.ninhhk.faster.Loadable;
 import com.ninhhk.faster.Request;
 
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 
-public abstract class MemoryStore {
+public abstract class MemoryStore
+        implements Loadable<Bitmap>, Cacheable<Bitmap> {
 
-    protected DiskStore diskStore;
+    protected int maxCacheSize;
 
-    protected BitmapStore bitmapStore;
-
-    public MemoryStore(DiskStore diskStore) {
-        this.diskStore = diskStore;
+    public MemoryStore(int maxCacheSize){
+        this.maxCacheSize = maxCacheSize;
     }
-
-    public MemoryStore(BitmapStore bitmapStore, Context context) {
-        this.bitmapStore = bitmapStore;
-        this.diskStore = bitmapStore.getDiskStore();
-    }
-
-    public MemoryStore(BitmapStore bitmapStore) {
-        this.bitmapStore = bitmapStore;
-        this.diskStore = bitmapStore.getDiskStore();
-    }
-
-    public abstract Bitmap load(Key key, Request request);
-
-    @NonNull
-    protected abstract ByteBuffer loadFromDisk(@NonNull Key key,
-                                               @NonNull Request request);
-
-    protected abstract boolean exists(Key key);
 
     public abstract void clear();
 }
