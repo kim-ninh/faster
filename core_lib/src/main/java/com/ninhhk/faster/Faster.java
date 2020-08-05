@@ -13,6 +13,7 @@ public class Faster {
 
     private Faster(Context context) {
         imageLoader = new ImageLoader(context, sConfig);
+        LogUtils.allowDebug(sConfig.isEnableLogging());
     }
 
     public static Request.Builder with(@NonNull Context context) {

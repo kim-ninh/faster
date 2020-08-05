@@ -64,4 +64,8 @@ public class LogUtils {
             Log.e(tag, msg, tr);
         }
     }
+
+    public static void allowDebug(boolean isAllow){
+        DEBUG = isAllow;
+    }
 }

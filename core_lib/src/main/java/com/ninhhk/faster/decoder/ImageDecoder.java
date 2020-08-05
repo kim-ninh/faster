@@ -36,6 +36,8 @@ public abstract class ImageDecoder {
         this.requestOption = requestOption;
 
         int[] decodedSize = config(bytes, 0, length);
+        int originW = opts.outWidth;
+        int originH = opts.outHeight;
         opts.inJustDecodeBounds = false;
         Bitmap reuseBitmap;
 
@@ -44,7 +46,11 @@ public abstract class ImageDecoder {
         opts.inBitmap = reuseBitmap;
         result = BitmapFactory.decodeByteArray(bytes, 0, length, opts);
 
-        LogUtils.i(TAG, StringUtils.concat("Bitmap after down sample size: ", String.valueOf(result.getWidth()), " x ", String.valueOf(result.getHeight())));
+        LogUtils.i(TAG, "Origin size =" + originW + "," + originH);
+        LogUtils.i(TAG, "Expected size =" + decodedSize[0] + "," + decodedSize[1]);
+        LogUtils.i(TAG, "Actual size =" + result.getWidth() + "," + result.getHeight());
+        LogUtils.i(TAG," ");
+//        LogUtils.i(TAG, StringUtils.concat("Bitmap after down sample size: ", String.valueOf(result.getWidth()), " x ", String.valueOf(result.getHeight())));
         return result;
     }
 
