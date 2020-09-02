@@ -23,7 +23,7 @@ import com.ninhhk.faster.transformer.TransformationFactory;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
-import java.nio.ByteBuffer;
+import java.util.concurrent.Future;
 
 public class Request {
 
@@ -34,6 +34,7 @@ public class Request {
     private ImageDecoder imageDecoder;
     public boolean isLoadFormMem = false;
     public int orientationTag = ExifInterface.ORIENTATION_UNDEFINED;
+    private boolean isLoadBitmapOnly = false;
 
     public Request(Builder builder) {
         this.dataSource = builder.dataSource;
@@ -41,6 +42,7 @@ public class Request {
         this.requestOption = builder.requestOption;
         this.targetView = builder.targetView;
         this.imageDecoder = builder.imageDecoder;
+        this.isLoadBitmapOnly = builder.isLoadBitmapOnly;
     }
 
     public Callback<Bitmap> getListener() {
@@ -63,6 +65,10 @@ public class Request {
         return imageDecoder;
     }
 
+    public boolean isLoadBitmapOnly() {
+        return isLoadBitmapOnly;
+    }
+
     public static class Builder {
         public static final String TAG = Builder.class.getSimpleName();
         private final Context context;
@@ -73,9 +79,10 @@ public class Request {
         private ImageLoader imageLoader;
         private ImageDecoder imageDecoder;
         private boolean scaleTypeIsSet = false;
+        private boolean isLoadBitmapOnly = false;
 
         public Builder(@NonNull ImageLoader imageLoader,
-                       @NonNull Context context){
+                       @NonNull Context context) {
             this.imageLoader = imageLoader;
             this.context = context;
         }
@@ -106,7 +113,7 @@ public class Request {
                     ImageView imageView = targetView.get();
 
                     if (dimensionUnset()) {
-                        setDefaultDimension();
+                        setDefaultDimensionWithImageView();
                     }
 
                     if (scaleTypeUnSet()) {
@@ -120,6 +127,20 @@ public class Request {
                     imageLoader.handleRequest(request);
                 }
             });
+        }
+
+        public Future<Bitmap> submit(int width, int height) {
+            resize(width, height);
+            isLoadBitmapOnly = true;
+            Request request = build();
+            return imageLoader.submitRequest(request);
+        }
+
+        public Future<Bitmap> submit(int maxSize){
+            resize(maxSize);
+            isLoadBitmapOnly = true;
+            Request request = build();
+            return imageLoader.submitRequest(request);
         }
 
         private boolean placeHoladerIsSet() {
@@ -136,17 +157,20 @@ public class Request {
             return !scaleTypeIsSet;
         }
 
-        private void setDefaultDimension() {
+        private void setDefaultDimensionWithImageView() {
             ImageView imageView = this.targetView.get();
-            if (imageView != null){
+            if (imageView != null) {
                 int width = imageView.getWidth();
                 int height = imageView.getHeight();
-                if (width != height) {
-                    resize(width, height);
-                }
-                else {
-                    resize(width);
-                }
+                setDefaultDimension(width, height);
+            }
+        }
+
+        private void setDefaultDimension(int width, int height) {
+            if (width != height) {
+                resize(width, height);
+            } else {
+                resize(width);
             }
         }
 
@@ -154,7 +178,7 @@ public class Request {
             return requestOption.isSizeUnset();
         }
 
-        private Request build(){
+        private Request build() {
             return new Request(this);
         }
 
@@ -165,7 +189,7 @@ public class Request {
             return this;
         }
 
-        public Builder resize(int size){
+        public Builder resize(int size) {
             this.resize(size, size);
             imageDecoder = new MatchAreaImageDecoder();
             return this;

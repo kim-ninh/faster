@@ -2,6 +2,7 @@ package com.ninhhk.faster.decoder;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -41,15 +42,17 @@ public abstract class ImageDecoder {
         opts.inJustDecodeBounds = false;
         Bitmap reuseBitmap;
 
+        LogUtils.i(TAG, "Origin size =" + originW + "," + originH);
+        LogUtils.i(TAG, "Expected size =" + decodedSize[0] + "," + decodedSize[1]);
+
         // reuseBitmap must have decoded size dimension!!!
         reuseBitmap = FasterBitmapPool.getInstance().get(decodedSize[0], decodedSize[1], Bitmap.Config.ARGB_8888);
         opts.inBitmap = reuseBitmap;
         result = BitmapFactory.decodeByteArray(bytes, 0, length, opts);
-
-        LogUtils.i(TAG, "Origin size =" + originW + "," + originH);
-        LogUtils.i(TAG, "Expected size =" + decodedSize[0] + "," + decodedSize[1]);
         LogUtils.i(TAG, "Actual size =" + result.getWidth() + "," + result.getHeight());
         LogUtils.i(TAG," ");
+        LogUtils.i(TAG, "Size after decoded: w,h = "
+                + result.getWidth() + "," + result.getHeight());
 //        LogUtils.i(TAG, StringUtils.concat("Bitmap after down sample size: ", String.valueOf(result.getWidth()), " x ", String.valueOf(result.getHeight())));
         return result;
     }

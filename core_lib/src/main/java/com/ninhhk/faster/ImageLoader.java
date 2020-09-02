@@ -22,13 +22,12 @@ import com.ninhhk.faster.data.store.LruDiskStore;
 import com.ninhhk.faster.data.store.LruMemoryStore;
 import com.ninhhk.faster.data.store.MemoryStore;
 import com.ninhhk.faster.decoder.ImageDecoder;
-import com.ninhhk.faster.pool.BitmapPool;
 import com.ninhhk.faster.transformer.Transformation;
 import com.ninhhk.faster.utils.ExifUtils;
-import com.ninhhk.faster.utils.MemoryUtils;
 
 import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -80,8 +79,8 @@ public class ImageLoader implements Loadable<Bitmap> {
             }
         }
 
-        LoadImageTask loadImageTask = buildTask(request);
-        Future<?> currentTask = executor.submit(loadImageTask);
+        LoadImageToImageViewTask loadImageToImageViewTask = buildTask(request);
+        Future<?> currentTask = executor.submit(loadImageToImageViewTask);
 
         if (targetView != null) {
             targetImageViewMap.put(targetView, currentTask);
@@ -92,8 +91,14 @@ public class ImageLoader implements Loadable<Bitmap> {
         postRequest(request);
     }
 
-    private LoadImageTask buildTask(Request request) {
-        return new LoadImageTask(request);
+    public Future<Bitmap> submitRequest(Request request){
+        LoadImageTask loadImageTask = new LoadImageTask(request);
+        Future<Bitmap> future = executor.submit(loadImageTask);
+        return future;
+    }
+
+    private LoadImageToImageViewTask buildTask(Request request) {
+        return new LoadImageToImageViewTask(request);
     }
 
     private void removeTaskFromMap(ImageView imageView) {
@@ -172,13 +177,20 @@ public class ImageLoader implements Loadable<Bitmap> {
 
         if (bitmap != null) {
             bitmap = applyExifOrientation(bitmap, request.orientationTag, request.getRequestOption());
-            bitmap = applyTransformation(bitmap, request.getRequestOption());
+            LogUtils.i(TAG, "Size after apply ExifOrientation: w,h = "
+                    + bitmap.getWidth() + "," + bitmap.getHeight());
+            bitmap = applyTransformation(bitmap, request.getRequestOption(), request.isLoadBitmapOnly());
+            LogUtils.i(TAG, "Size after apply Transformation: w,h = "
+                    + bitmap.getWidth() + "," + bitmap.getHeight());
         }
 
         return bitmap;
     }
 
-    private Bitmap applyTransformation(Bitmap bitmap, RequestOption requestOption) {
+    private Bitmap applyTransformation(Bitmap bitmap, RequestOption requestOption, boolean isLoadBitmapOnly) {
+        if (isLoadBitmapOnly){
+            return bitmap;
+        }
         Transformation transformation = requestOption.getTransformation();
         return transformation.transform(bitmap, requestOption.getFinalWidth(), requestOption.getFinalHeight());
     }
@@ -189,7 +201,28 @@ public class ImageLoader implements Loadable<Bitmap> {
         return newBitmap;
     }
 
-    private class LoadImageTask implements Runnable, Callback<Bitmap> {
+    private class LoadImageTask implements Callable<Bitmap>{
+
+        private Request request;
+
+        public LoadImageTask(Request request) {
+            this.request = request;
+        }
+
+        @Override
+        public Bitmap call() {
+            Bitmap bitmap = null;
+            try {
+                Key bitmapKey = new BitmapKeyFactory().build(request);
+                bitmap = load(bitmapKey, request);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            return bitmap;
+        }
+    }
+
+    private class LoadImageToImageViewTask implements Runnable, Callback<Bitmap> {
         private Request request;
         private WeakReference<ImageView> targetView;
         private Callback<Bitmap> requestListener;
@@ -197,7 +230,7 @@ public class ImageLoader implements Loadable<Bitmap> {
         private final Drawable placeHolderDrawable;
 
 
-        public LoadImageTask(Request request) {
+        public LoadImageToImageViewTask(Request request) {
             this.request = request;
             targetView = request.getTargetView();
             requestListener = request.getListener();
