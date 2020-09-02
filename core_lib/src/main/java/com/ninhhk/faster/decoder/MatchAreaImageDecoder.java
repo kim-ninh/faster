@@ -26,8 +26,8 @@ public class MatchAreaImageDecoder extends ImageDecoder {
             return new int[]{decodedWidth, decodedHeight};
         }
 
-        int targetW = Math.round((float) Math.sqrt(areaLimit * originWidth / (double) originHeight));
-        int targetH = Math.round((float) Math.sqrt(areaLimit * originHeight / (double) originWidth));
+        int targetW = Math.round((float) Math.sqrt(areaLimit / (double) originHeight * originWidth));
+        int targetH = Math.round((float) Math.sqrt(areaLimit / (double) originWidth * originHeight));
 
         int sampleSize = calculateSampleSize(originWidth, originHeight, areaLimit);
 
