@@ -1,5 +1,6 @@
 package com.ninhhk.faster;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -36,8 +37,10 @@ import java.util.concurrent.TimeUnit;
 
 public class ImageLoader implements Loadable<Bitmap> {
 
-    @NonNull private final MemoryStore memoryStore;
-    @Nullable private final DiskStore diskStore;
+    @NonNull
+    private final MemoryStore memoryStore;
+    @Nullable
+    private final DiskStore diskStore;
 
     public static final int TOTAL_THREAD_AVAILABLE = 4;
     private static final String TAG = ImageLoader.class.getSimpleName();
@@ -49,15 +52,16 @@ public class ImageLoader implements Loadable<Bitmap> {
 
     private SparseIntArray orientationTags = new SparseIntArray();
 
-    @NonNull private Config fasterConfig;
+    @NonNull
+    private Config fasterConfig;
 
     public ImageLoader(@NonNull Context context, @NonNull Config fasterConfig) {
 
         this.memoryStore = new LruMemoryStore(LruMemoryStore.getSuitableSize(context));
 
-        if (fasterConfig.isUseDiskCache()){
+        if (fasterConfig.isUseDiskCache()) {
             this.diskStore = new LruDiskStore(context.getCacheDir());
-        }else {
+        } else {
             this.diskStore = null;
         }
 
@@ -91,7 +95,7 @@ public class ImageLoader implements Loadable<Bitmap> {
         postRequest(request);
     }
 
-    public Future<Bitmap> submitRequest(Request request){
+    public Future<Bitmap> submitRequest(Request request) {
         LoadImageTask loadImageTask = new LoadImageTask(request);
         Future<Bitmap> future = executor.submit(loadImageTask);
         return future;
@@ -105,6 +109,7 @@ public class ImageLoader implements Loadable<Bitmap> {
         targetImageViewMap.remove(imageView);
     }
 
+    @SuppressLint("DefaultLocale")
     @Nullable
     @Override
     public Bitmap load(@NonNull Key key, @NonNull Request request) {
@@ -132,20 +137,20 @@ public class ImageLoader implements Loadable<Bitmap> {
             }
         }
 
-        if (loadedData instanceof ByteBuffer){
+        if (loadedData instanceof ByteBuffer) {
             byteBuffer = (ByteBuffer) loadedData;
-        }else if (loadedData instanceof Bitmap){
+        } else if (loadedData instanceof Bitmap) {
             bitmap = (Bitmap) loadedData;
         }
 
         // Cache to disk if allow
-        if (fasterConfig.isUseDiskCache() && loadable == request.getDataSource()){
-            if (diskStore != null && byteBuffer != null){
+        if (fasterConfig.isUseDiskCache() && loadable == request.getDataSource()) {
+            if (diskStore != null && byteBuffer != null) {
                 diskStore.cache(key, byteBuffer);
             }
         }
 
-        if (loadablePosition > 0 && byteBuffer != null){
+        if (loadablePosition > 0 && byteBuffer != null) {
             ImageDecoder imageDecoder = request.getImageDecoder();
             RequestOption requestOption = request.getRequestOption();
             bitmap = imageDecoder.decode(byteBuffer, requestOption);
@@ -156,7 +161,7 @@ public class ImageLoader implements Loadable<Bitmap> {
 
                 memoryStore.cache(key, bitmap);
 
-                synchronized (this){
+                synchronized (this) {
                     orientationTags.put(
                             key.hashCode(),
                             request.orientationTag);
@@ -165,10 +170,10 @@ public class ImageLoader implements Loadable<Bitmap> {
                 e.printStackTrace();
                 bitmap = null;
             }
-        }else if (loadablePosition == 0){
+        } else if (loadablePosition == 0) {
             request.isLoadFormMem = true;
 
-            synchronized (this){
+            synchronized (this) {
                 request.orientationTag = orientationTags.get(
                         key.hashCode(),
                         ExifInterface.ORIENTATION_UNDEFINED);
@@ -177,18 +182,20 @@ public class ImageLoader implements Loadable<Bitmap> {
 
         if (bitmap != null) {
             bitmap = applyExifOrientation(bitmap, request.orientationTag, request.getRequestOption());
-            LogUtils.i(TAG, "Size after apply ExifOrientation: w,h = "
-                    + bitmap.getWidth() + "," + bitmap.getHeight());
+            LogUtils.i(TAG, String.format("Size after apply ExifOrientation: w,h=%d, %d",
+                    bitmap.getWidth(),
+                    bitmap.getHeight()));
             bitmap = applyTransformation(bitmap, request.getRequestOption(), request.isLoadBitmapOnly());
-            LogUtils.i(TAG, "Size after apply Transformation: w,h = "
-                    + bitmap.getWidth() + "," + bitmap.getHeight());
+            LogUtils.i(TAG, String.format("Size after apply Transformation: w,h=%d, %d",
+                    bitmap.getWidth(),
+                    bitmap.getHeight()));
         }
 
         return bitmap;
     }
 
     private Bitmap applyTransformation(Bitmap bitmap, RequestOption requestOption, boolean isLoadBitmapOnly) {
-        if (isLoadBitmapOnly){
+        if (isLoadBitmapOnly) {
             return bitmap;
         }
         Transformation transformation = requestOption.getTransformation();
@@ -201,7 +208,7 @@ public class ImageLoader implements Loadable<Bitmap> {
         return newBitmap;
     }
 
-    private class LoadImageTask implements Callable<Bitmap>{
+    private class LoadImageTask implements Callable<Bitmap> {
 
         private Request request;
 
@@ -215,7 +222,7 @@ public class ImageLoader implements Loadable<Bitmap> {
             try {
                 Key bitmapKey = new BitmapKeyFactory().build(request);
                 bitmap = load(bitmapKey, request);
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             return bitmap;
@@ -286,7 +293,7 @@ public class ImageLoader implements Loadable<Bitmap> {
 
     public void clearCache() {
         memoryStore.clear();
-        if (fasterConfig.isUseDiskCache() && diskStore != null){
+        if (fasterConfig.isUseDiskCache() && diskStore != null) {
             diskStore.clear();
         }
     }

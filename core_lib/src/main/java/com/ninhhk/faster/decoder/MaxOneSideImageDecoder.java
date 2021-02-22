@@ -2,9 +2,16 @@ package com.ninhhk.faster.decoder;
 
 import android.graphics.BitmapFactory;
 
+import com.ninhhk.faster.LogUtils;
+
 public class MaxOneSideImageDecoder extends ImageDecoder {
+    private static final String TAG = MaxOneSideImageDecoder.class.getSimpleName();
+
     @Override
     protected int[] config(byte[] bytes, int offset, int length) {
+        LogUtils.i(TAG, " ");
+        LogUtils.i(TAG, " ");
+
         opts.inJustDecodeBounds = true;
         BitmapFactory.decodeByteArray(bytes, offset, length , opts);
         int originWidth = opts.outWidth;

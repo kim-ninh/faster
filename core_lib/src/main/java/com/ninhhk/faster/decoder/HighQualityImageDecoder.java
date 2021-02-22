@@ -25,8 +25,8 @@ public class HighQualityImageDecoder extends ImageDecoder {
         int inSampleSize = 1;
 
         if (originHeight > targetHeight || originWidth > targetWidth){
-            float halfHeight = originHeight / 2;
-            float halfWidth = originWidth / 2;
+            float halfHeight = originHeight / 2f;
+            float halfWidth = originWidth / 2f;
 
             while ((halfHeight / inSampleSize) >= targetHeight
                 && (halfWidth / inSampleSize) >= targetWidth){

@@ -1,4 +1,4 @@
-package com.ninhhk.galleryexample;
+package com.ninhhk.flick_example;
 
 import android.app.Application;
 
