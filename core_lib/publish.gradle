@@ -1,0 +1,87 @@
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
+
+apply from: 'artifact-pom-manager.gradle'
+apply from: 'artifact-javadoc-handler.gradle'
+
+group = PUBLISH_GROUP_ID
+version = PUBLISH_VERSION
+
+//project.ext {
+//    mavGitUrl = 'https://gitlab.com/kim-ninh/faster.git'
+//    mavProjectName = 'Faster'
+//    mavLibraryLicenses = ["Apache-2.0":'http://www.apache.org/licenses/LICENSE-2.0.txt']
+//    mavLibraryDescription = "An Awesome Android library"
+//    mavPublishToMavenLocal = true
+//    mavSiteUrl = 'https://gitlab.com/kim-ninh/faster'
+//}
+
+project.afterEvaluate {
+    publishing {
+        publications {
+            mavenAndroid(MavenPublication) {
+                groupId = PUBLISH_GROUP_ID
+                artifactId = PUBLISH_ARTIFACT_ID
+                version = PUBLISH_VERSION
+
+                from components.release
+
+                artifact androidJavadocsJar
+                artifact androidSourcesJar
+
+                pom {
+                    name = 'Faster'
+                    description = 'It\'s an awesome lib'
+                    url = 'https://gitlab.com/kim-ninh/faster'
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'kim-ninh'
+                            name = 'Ninh Huynh'
+                            email = 'kimninh1610@gmail.com'
+                        }
+                    }
+                    scm {
+                        connection = 'https://gitlab.com/kim-ninh/faster.git'
+                        developerConnection = 'https://gitlab.com/kim-ninh/faster.git'
+                        url = 'https://gitlab.com/kim-ninh/faster'
+                    }
+                }
+            }
+        }
+    }
+}
+
+def properties = new Properties()
+properties.load(new FileInputStream("local.properties"))
+
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+    println('User: ' + user)
+    println('Key: ' + key)
+    publications = ['mavenAndroid']
+    configurations = ['archives']
+    override = true
+    pkg {
+        repo = 'faster'
+        name = 'Faster'
+        description = "It's an awesome lib"
+        publicDownloadNumbers = true
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://gitlab.com/kim-ninh/faster'
+        version {
+            name = this.version
+            desc = "Version ${this.version}"
+            released = new Date()
+            vcsTag = this.version
+        }
+    }
+}
+
+//apply from: 'https://raw.githubusercontent.com/sky-uk/gradle-maven-plugin/master/gradle-mavenizer.gradle'
